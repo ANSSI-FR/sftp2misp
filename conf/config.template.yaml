@@ -1,0 +1,16 @@
+SFTP:
+  host: "sftp host"
+  username: "sftp username"
+  password: "sftp user password"
+  sftp_directory: "directory where events are stored in sftp"
+  local_directory: "directory where events will be stored locally"
+
+MISP:
+  url: "your misp instance url"
+  key: "your misp instance api key"
+  ssl: False #Use https requests instead of http
+  CA_BUNDLE: "your misp certificate bundle"
+
+MISC:
+  logging_conf: conf/logging.yaml
+  logging_file: log/sftp.log
