@@ -1,13 +1,16 @@
-from config import sftp_c, misp_c, logger
+import config
 from pymisp import ExpandedPyMISP, MISPEvent
 import pysftp
 import os
 import json
+import argparse
 
-def init():
+def init(config_file):
     """
     init local directory to download event files from ftp server
     """
+    sftp_c, misp_c, misc_c = config.get_config(config_file)
+    logger = config.get_logger(misc_c["logging_conf"], misc_c["logging_file"])
     try:
         os.mkdir(sftp_c["local_directory"])
     except FileExistsError:
@@ -15,16 +18,25 @@ def init():
     except:
         logger.info("Unexpected error: %s", sys.exc_info()[0])
         raise
+    return logger, sftp_c, misp_c
 
 
-def misp_init():
+def misp_init(misp_c):
     """
     init connexion to misp instance
     """
+    config.set_ssl(misp_c)
     return ExpandedPyMISP(misp_c["url"],
                           misp_c["key"],
                           misp_c["ssl"])
 
+
+def cli():
+    parser = argparse.ArgumentParser(description='Transfer event from sftp to misp')
+    parser.add_argument("-c", "--config",
+                         required=False, default="./conf/config.yaml",
+                         help="Fichier de configuration différent de config.yaml")
+    return parser.parse_args()
 
 def event_already_exist(misp, event) -> bool:
     """
@@ -49,7 +61,8 @@ def main():
     """
     main
     """
-    init()
+    args = cli()
+    logger, sftp_c, misp_c = init(args.config)
     event_added = 0
     event_updated = 0
     with pysftp.Connection(host=sftp_c["host"],
@@ -57,7 +70,7 @@ def main():
                            password=sftp_c["password"]) as sftp:
         sftp.cwd(sftp_c["sftp_directory"])
         content = sftp.listdir_attr()
-        misp = misp_init()
+        misp = misp_init(misp_c)
         for file in content:
             if(file.filename.split('.')[-1] == "json"):
                 local_file_name = sftp_c["local_directory"] + "/" + file.filename
