@@ -4,6 +4,7 @@ import paramiko
 import os
 import json
 import argparse
+from getpass import getpass
 
 
 def init(config_file):
@@ -32,7 +33,11 @@ def misp_init(misp_c):
                           misp_c["ssl"])
 
 def ssh_init(sftp_c):
-    key = paramiko.RSAKey.from_private_key_file(sftp_c["private_key_file"], sftp_c["private_key_password"])
+    if sftp_c["private_key_password"] == "" or sftp_c["private_key_password"] is None:
+        key_password = getpass()
+    else :
+        key_password = sftp_c["private_key_password"]
+    key = paramiko.RSAKey.from_private_key_file(sftp_c["private_key_file"], key_password)
     ssh = paramiko.SSHClient()
     ssh.load_host_keys(sftp_c["known_hosts_file"])
     ssh.connect(sftp_c["host"], port=sftp_c["port"], username=sftp_c["username"], pkey=key)
