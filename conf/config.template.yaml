@@ -1,11 +1,15 @@
 SFTP:
+  #Ne pas modifier
   host: "51.91.127.144"
+  #Ne pas modifier
   port: 2225
+  #Ne pas modifier
+  sftp_directory: "/data/MS/misp_events"
+
   username: "sftp username"
   private_key_file: "/path/to/private/ssh/keyfile"
   private_key_password: "password for ssh keyfile"
   known_hosts_file: "/path/to/server/public/key(known_hosts)"
-  sftp_directory: "/data/MS/misp_events"
   local_directory: "./output"
 
 MISP:
