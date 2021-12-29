@@ -1,9 +1,10 @@
 import config
-from pymisp import ExpandedPyMISP, MISPEvent
+from pymisp import ExpandedPyMISP, MISPEvent, MISPAttribute
 import paramiko
 import os
 import json
 import argparse
+
 
 def init(config_file):
     """
@@ -30,6 +31,12 @@ def misp_init(misp_c):
                           misp_c["key"],
                           misp_c["ssl"])
 
+def ssh_init(sftp_c):
+    key = paramiko.RSAKey.from_private_key_file(sftp_c["private_key_file"], sftp_c["private_key_password"])
+    ssh = paramiko.SSHClient()
+    ssh.load_host_keys(sftp_c["known_hosts_file"])
+    ssh.connect(sftp_c["host"], port=sftp_c["port"], username=sftp_c["username"], pkey=key)
+    return ssh
 
 def cli():
     parser = argparse.ArgumentParser(description='Transfer event from sftp to misp')
@@ -57,19 +64,26 @@ def event_not_updated(misp, local_event) -> bool:
     return local_event_timestamp == misp_event_timestamp
 
 
+def event_deleted(misp, event) -> bool:
+    blocklist = misp.event_blocklists()
+    event_uuid = event.get("uuid")
+    for ev in blocklist:
+        if ev.get("event_uuid") == event_uuid:
+            return True
+    return False
+
+
 def main():
     """
     main
     """
     args = cli()
     logger, sftp_c, misp_c = init(args.config)
-    key = paramiko.RSAKey.from_private_key_file(sftp_c["private_key_file"], sftp_c["private_key_password"])
-    ssh = paramiko.SSHClient()
-    ssh.load_host_keys(sftp_c["known_hosts_file"])
-    ssh.connect(sftp_c["host"], port=sftp_c["port"], username=sftp_c["username"], pkey=key)
-    event_added = 0
-    event_updated = 0
-
+    ssh = ssh_init(sftp_c)
+    _event_added = 0
+    _event_not_updated = 0
+    _event_updated = 0
+    _event_deleted = 0
     with ssh.open_sftp() as sftp:
         sftp.chdir(sftp_c["sftp_directory"])
         content = sftp.listdir_attr()
@@ -84,14 +98,18 @@ def main():
                     if not event_not_updated(misp, event):
                         misp.update_event(event, pythonify=True)
                         logger.info("Event %s updated", file.filename)
-                        event_updated+=1
+                        _event_updated+=1
                     else:
+                        _event_not_updated+=1
                         logger.info("Event %s was not updated", file.filename)
+                elif event_deleted(misp, event):
+                    _event_deleted+=1
+                    logger.info("Event %s is in blocklist", file.filename)
                 else:
                     misp.add_event(event, pythonify=True)
                     logger.info("Event %s added", file.filename)
-                    event_added+=1
-        logger.info("Total : %s events updated and %s events added", event_updated, event_added)
+                    _event_added+=1
+        logger.info("Total : \n %s events mis à jour \n %s events ajoutés \n %s events non ajoutés car dans la blocklist (supprimé précédemment) \n %s events non mis à jour", _event_updated, _event_added, _event_deleted, _event_not_updated)
 
 
 
