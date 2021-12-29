@@ -1,14 +1,17 @@
 SFTP:
-  host: "sftp host"
+  host: "51.91.127.144"
+  port: 2225
   username: "sftp username"
-  password: "sftp user password"
+  private_key_file: "/path/to/private/ssh/keyfile"
+  private_key_password: "password for ssh keyfile"
+  known_hosts_file: "/path/to/server/public/key(known_hosts)"
   sftp_directory: "directory where events are stored in sftp"
   local_directory: "directory where events will be stored locally"
 
 MISP:
   url: "your misp instance url"
   key: "your misp instance api key"
-  ssl: False #Use https requests instead of http
+  ssl: true #Use https requests instead of http
   CA_BUNDLE: "your misp certificate bundle"
 
 MISC:
