@@ -8,6 +8,7 @@ SFTP:
 
   username: "sftp username"
   private_key_file: "/path/to/private/ssh/keyfile"
+  #Laisser vide ("") pour spécifier le mot de passe a l'execution du script
   private_key_password: "password for ssh keyfile"
   known_hosts_file: "/path/to/server/public/key(known_hosts)"
   local_directory: "./output"
