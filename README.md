@@ -11,7 +11,7 @@ Installation des dependences : `pip install -r requirements.txt`
 
 ## Configuration
 `cp conf/config.template.yaml conf/config.yaml`  
-puis éditer `conf/conf.yaml` en fonction de votre environnement
+puis éditer `conf/config.yaml` en fonction de votre environnement
 
 Le dossier par défaut de sauvegarde des events est ./output et le fichier de sauvegarde des logs par défaut est ./log/sftp.log.
 
