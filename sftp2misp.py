@@ -37,7 +37,7 @@ def ssh_init(sftp_c):
         key_password = getpass("Mot de passe du fichier de la clé privée : ")
     else :
         key_password = sftp_c["private_key_password"]
-        
+
     try:
         key = paramiko.RSAKey.from_private_key_file(sftp_c["private_key_file"], key_password)
     except paramiko.ssh_exception.SSHException:
@@ -46,6 +46,7 @@ def ssh_init(sftp_c):
         except :
             raise
     ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.load_host_keys(sftp_c["known_hosts_file"])
     ssh.connect(sftp_c["host"], port=sftp_c["port"], username=sftp_c["username"], pkey=key)
     return ssh
