@@ -47,8 +47,13 @@ def ssh_init(sftp_c):
             raise
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    if sftp_c["proxy_command"] == "" or sftp_c["proxy_command"] is None:
+        proxy = None
+    else:
+        proxy = paramiko.proxy.ProxyCommand(sftp_c["proxy_command"])
+
     ssh.load_host_keys(sftp_c["known_hosts_file"])
-    ssh.connect(sftp_c["host"], port=sftp_c["port"], username=sftp_c["username"], pkey=key)
+    ssh.connect(sftp_c["host"], port=sftp_c["port"], username=sftp_c["username"], pkey=key, sock=proxy)
     return ssh
 
 def cli():
@@ -97,32 +102,32 @@ def main():
     _event_not_updated = 0
     _event_updated = 0
     _event_deleted = 0
-    with ssh.open_sftp() as sftp:
-        sftp.chdir(sftp_c["sftp_directory"])
-        content = sftp.listdir_attr()
-        misp = misp_init(misp_c)
-        for file in content:
-            if(file.filename.split('.')[-1] == "json"):
-                local_file_name = sftp_c["local_directory"] + "/" + file.filename
-                sftp.get(file.filename, local_file_name)
-                event=MISPEvent()
-                event.load_file(local_file_name)
-                if event_already_exist(misp, event):
-                    if not event_not_updated(misp, event):
-                        misp.update_event(event, pythonify=True)
-                        logger.info("Event %s updated", file.filename)
-                        _event_updated+=1
-                    else:
-                        _event_not_updated+=1
-                        logger.info("Event %s was not updated", file.filename)
-                elif event_deleted(misp, event):
-                    _event_deleted+=1
-                    logger.info("Event %s is in blocklist", file.filename)
-                else:
-                    misp.add_event(event, pythonify=True)
-                    logger.info("Event %s added", file.filename)
-                    _event_added+=1
-        logger.info("Total : \n %s events mis à jour \n %s events ajoutés \n %s events non ajoutés car dans la blocklist (supprimé précédemment) \n %s events non mis à jour", _event_updated, _event_added, _event_deleted, _event_not_updated)
+    # with ssh.open_sftp() as sftp:
+    #     sftp.chdir(sftp_c["sftp_directory"])
+    #     content = sftp.listdir_attr()
+    #     misp = misp_init(misp_c)
+    #     for file in content:
+    #         if(file.filename.split('.')[-1] == "json"):
+    #             local_file_name = sftp_c["local_directory"] + "/" + file.filename
+    #             sftp.get(file.filename, local_file_name)
+    #             event=MISPEvent()
+    #             event.load_file(local_file_name)
+    #             if event_already_exist(misp, event):
+    #                 if not event_not_updated(misp, event):
+    #                     misp.update_event(event, pythonify=True)
+    #                     logger.info("Event %s updated", file.filename)
+    #                     _event_updated+=1
+    #                 else:
+    #                     _event_not_updated+=1
+    #                     logger.info("Event %s was not updated", file.filename)
+    #             elif event_deleted(misp, event):
+    #                 _event_deleted+=1
+    #                 logger.info("Event %s is in blocklist", file.filename)
+    #             else:
+    #                 misp.add_event(event, pythonify=True)
+    #                 logger.info("Event %s added", file.filename)
+    #                 _event_added+=1
+    #     logger.info("Total : \n %s events mis à jour \n %s events ajoutés \n %s events non ajoutés car dans la blocklist (supprimé précédemment) \n %s events non mis à jour", _event_updated, _event_added, _event_deleted, _event_not_updated)
 
 
 

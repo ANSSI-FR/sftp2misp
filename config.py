@@ -1,6 +1,10 @@
-import yaml
-import logging, logging.config
+import logging
+import logging.config
 import os
+import sys
+
+import yaml
+
 
 def get_config(conf_file):
     with open(conf_file, "r") as config_file:
@@ -25,7 +29,7 @@ def get_logger(log_conf_file, log_file):
     file_handler = logging.handlers.RotatingFileHandler(log_file, 'a',
                             maxBytes=10485760, backupCount=20,
                             encoding="utf8")
-    file_handler.setLevel(logging.INFO)
+    file_handler.setLevel(1)
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s.%(funcName)s(): %(message)s')
     file_handler.setFormatter(formatter)
 
