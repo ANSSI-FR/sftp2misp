@@ -33,25 +33,28 @@ def misp_init(misp_c):
                           misp_c["ssl"])
 
 def ssh_init(sftp_c):
+
     if sftp_c["private_key_password"] == "" or sftp_c["private_key_password"] is None:
         key_password = getpass("Mot de passe du fichier de la clé privée : ")
     else :
         key_password = sftp_c["private_key_password"]
-
-    try:
-        key = paramiko.RSAKey.from_private_key_file(sftp_c["private_key_file"], key_password)
-    except paramiko.ssh_exception.SSHException:
-        try :
-            key = paramiko.ECDSAKey.from_private_key_file(sftp_c["private_key_file"], key_password)
-        except :
-            raise
+    while True:
+        try:
+            key = paramiko.RSAKey.from_private_key_file(sftp_c["private_key_file"], key_password)
+            break
+        except paramiko.ssh_exception.SSHException:
+            try :
+                key = paramiko.ECDSAKey.from_private_key_file(sftp_c["private_key_file"], key_password)
+                break
+            except paramiko.ssh_exception.SSHException:
+                print("Mot de passe erroné")
+                key_password = getpass("Mot de passe du fichier de la clé privée : ")
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     if sftp_c["proxy_command"] == "" or sftp_c["proxy_command"] is None:
         proxy = None
     else:
         proxy = paramiko.proxy.ProxyCommand(sftp_c["proxy_command"])
-
     ssh.load_host_keys(sftp_c["known_hosts_file"])
     ssh.connect(sftp_c["host"], port=sftp_c["port"], username=sftp_c["username"], pkey=key, sock=proxy)
     return ssh
