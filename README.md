@@ -1,13 +1,13 @@
-# Sigpart Pull
+# sftp2misp
 
-Script d'automatisation du pull est events sigpart : SFTP -> MISP des bénéficiaires, pour simplifier le partage.
+Script d'automatisation de récupération des events SIGPART : SFTP -> MISP des bénéficiaires, pour simplifier le partage.
 
 ## Installation
 
-De préférence faire usage d'un virtualenv python :
-Creation du virtualenv : `python3 -m venv path/to/venv`  
+De préférence faire usage d'un virtualenv Python :
+Création du virtualenv : `python3 -m venv path/to/venv`  
 Activation du virtual env : `source path/to/venv/bin/activate`  
-Installation des dependences : `pip install -r requirements.txt`  
+Installation des dépendances : `pip install -r requirements.txt`  
 
 ## Configuration
 `cp conf/config.template.yaml conf/config.yaml`  
@@ -21,4 +21,4 @@ Le dossier par défaut de sauvegarde des events est ./output et le fichier de sa
 
 
 Options
-  - -c configfile -> Fournir un fichier de configuration avec un nom différent dde config.yaml
+  - -c configfile -> Fournir un fichier de configuration avec un nom différent de config.yaml
