@@ -1,25 +1,15 @@
 import config
-from pymisp import ExpandedPyMISP, MISPEvent, MISPAttribute
-import paramiko
+from pymisp import ExpandedPyMISP, MISPEvent
 import os
-import json
 import argparse
-from getpass import getpass
-import asyncio, asyncssh, sys
-
-import asyncio
-import stat
-
-import aiosocks
-import asyncssh
-from asyncssh import SFTPClient
 
 import subprocess
 import sys
 
 def init(config_file):
     """
-    init local directory to download event files from ftp server
+    Initialise les dossiers locaux et la paramètres selon la
+    configuration.
     """
     sftp_c, misp_c, misc_c = config.get_config(config_file)
     logger = config.get_logger(misc_c["logging_conf"], misc_c["logging_file"])
@@ -35,7 +25,8 @@ def init(config_file):
 
 def misp_init(misp_c):
     """
-    init connexion to misp instance
+    Initialise la connexion à l'instance MISP en instanciant un objet
+    ExpandedPyMISP avec les bons paramètres.
     """
     config.set_ssl(misp_c)
     return ExpandedPyMISP(misp_c["url"],
@@ -44,6 +35,9 @@ def misp_init(misp_c):
 
 
 def cli():
+    """
+    Initialise les arguments du scripts.
+    """
     parser = argparse.ArgumentParser(description='Transfer event from sftp to misp')
     parser.add_argument("-c", "--config",
                         required=False, default="./conf/config.yaml",
@@ -53,7 +47,8 @@ def cli():
 
 def event_already_exist(misp, event) -> bool:
     """
-    check if event is already on misp instance
+    Test si l'évenements en cours  de traitement existe déja dans l'instance
+    MISP.
     """
     event_uuid = event.get("uuid")
     return misp.event_exists(event_uuid)
@@ -61,7 +56,8 @@ def event_already_exist(misp, event) -> bool:
 
 def event_not_updated(misp, local_event) -> bool:
     """
-    check if event has been updated since last upload
+    Test si l'évenements en cours de traitement à été mis à jour par rapport
+    à la version actuelle dans l'instance MISP.
     """
     local_event_uuid = local_event.get("uuid")
     local_event_timestamp = local_event.get("timestamp")
@@ -71,6 +67,10 @@ def event_not_updated(misp, local_event) -> bool:
 
 
 def event_deleted(misp, event) -> bool:
+    """
+    Test si l'évenements en cours de traitement à été précédemment supprimé
+    de l'instance MISP.
+    """
     blocklist = misp.event_blocklists()
     event_uuid = event.get("uuid")
     for ev in blocklist:
@@ -81,29 +81,32 @@ def event_deleted(misp, event) -> bool:
 
 def get_events(identity_file,
                proxy_command,
-               ip,
+               host_ip,
                port,
                user,
                server_dir,
                local_dir):
+    """
+    Récupère la liste des évenements disponibles sur l'instance FTP.
+    """
     subprocess.run(["sftp",
                     "-i", f"{identity_file}",
                     f"-o ProxyCommand={proxy_command}",
                     "-P", f"{port}",
-                    f"{user}@{ip}:{server_dir}/5dd*.json {local_dir}"])
+                    f"{user}@{host_ip}:{server_dir}/*.json {local_dir}"], check=True)
 
 
-def upload_events(misp, logger):
+def upload_events(misp, local_dir, logger):
     """
-
+    Pour chaque events dans le dossier local_dir, instancie un MISPEvent et
+    tente de l'ajouter à l'instance MISP.
     """
     _event_updated = 0
     _event_not_updated = 0
     _event_added = 0
     _event_deleted = 0
-    local_ouput = "output"
-    for filename in os.listdir(local_ouput):
-        file = os.path.join(local_ouput, filename)
+    for filename in os.listdir(local_dir):
+        file = os.path.join(local_dir, filename)
         event = MISPEvent()
         event.load_file(file)
         if event_already_exist(misp, event):
@@ -139,7 +142,7 @@ def main():
                sftp_c["proxy_command"],
                sftp_c["host"], sftp_c["port"], sftp_c["username"],
                sftp_c["sftp_directory"], sftp_c["local_directory"])
-    upload_events(misp, logger)
+    upload_events(misp, sftp_c["local_directory"], logger)
 
 if __name__ == "__main__":
     # execute only if run as a script
