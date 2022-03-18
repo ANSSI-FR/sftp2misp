@@ -105,6 +105,7 @@ def upload_events(misp, local_dir, logger):
     _event_not_updated = 0
     _event_added = 0
     _event_deleted = 0
+    _event_error = 0
     for filename in os.listdir(local_dir):
         file = os.path.join(local_dir, filename)
         event = MISPEvent()
@@ -112,23 +113,29 @@ def upload_events(misp, local_dir, logger):
         if event_already_exist(misp, event):
             if not event_not_updated(misp, event):
                 misp.update_event(event, pythonify=False)
-                logger.info("Event %s mis à jour", file)
+                logger.info(f"Event {file} mis à jour")
                 _event_updated += 1
             else:
                 _event_not_updated += 1
-                logger.info("Event %s existant et non mis à jour", file)
+                logger.info(f"Event {file} existant et non mis à jour")
         elif event_deleted(misp, event):
             _event_deleted += 1
-            logger.info("Event %s supprimé, dans la blocklist", file)
+            logger.info(f"Event {file} supprimé, dans la blocklist")
         else:
-            misp.add_event(event, pythonify=False)
-            logger.info("Event %s ajouté", file)
-            _event_added += 1
+            rep = misp.add_event(event, pythonify=False)
+            if "errors" in rep:
+                logger.warning(f"Erreur sur l'event : {file}")
+                print(rep)
+                _event_error += 1
+            else:
+                logger.info(f"Event {file} ajouté")
+                _event_added += 1
     logger.info(f"Total : \
                 \n\t {_event_updated} events mis à jour \
                 \n\t {_event_added} events ajoutés \
                 \n\t {_event_deleted} events non ajoutés car dans la blocklist (supprimé précédemment) \
-                \n\t {_event_not_updated} events non mis à jour")
+                \n\t {_event_not_updated} events non mis à jour \
+                \n\t {_event_error} erreurs d'importation")
 
 
 def main():
