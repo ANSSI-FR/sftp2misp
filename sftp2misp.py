@@ -111,18 +111,18 @@ def upload_events(misp, local_dir, logger):
         event.load_file(file)
         if event_already_exist(misp, event):
             if not event_not_updated(misp, event):
-                misp.update_event(event, pythonify=True)
-                logger.info("Event %s updated", file)
+                misp.update_event(event, pythonify=False)
+                logger.info("Event %s mis à jour", file)
                 _event_updated += 1
             else:
                 _event_not_updated += 1
-                logger.info("Event %s was not updated", file)
+                logger.info("Event %s existant et non mis à jour", file)
         elif event_deleted(misp, event):
             _event_deleted += 1
-            logger.info("Event %s is in blocklist", file)
+            logger.info("Event %s supprimé, dans la blocklist", file)
         else:
             misp.add_event(event, pythonify=False)
-            logger.info("Event %s added", file)
+            logger.info("Event %s ajouté", file)
             _event_added += 1
     logger.info(f"Total : \
                 \n\t {_event_updated} events mis à jour \
@@ -138,10 +138,10 @@ def main():
     args = cli()
     logger, sftp_c, misp_c = init(args.config)
     misp = misp_init(misp_c)
-    get_events(sftp_c["private_key_file"],
-               sftp_c["proxy_command"],
-               sftp_c["host"], sftp_c["port"], sftp_c["username"],
-               sftp_c["sftp_directory"], sftp_c["local_directory"])
+    #get_events(sftp_c["private_key_file"],
+    #           sftp_c["proxy_command"],
+    #           sftp_c["host"], sftp_c["port"], sftp_c["username"],
+    #           sftp_c["sftp_directory"], sftp_c["local_directory"])
     upload_events(misp, sftp_c["local_directory"], logger)
 
 if __name__ == "__main__":
