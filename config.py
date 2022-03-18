@@ -44,4 +44,4 @@ def get_logger(log_conf_file, log_file):
 
 def set_ssl(misp_c):
     if(misp_c["ssl"]):
-        os.environ['REQUESTS_CA_BUNDLE'] = misp_c["MISP_CONF"]["CA_BUNDLE"]
+        os.environ['REQUESTS_CA_BUNDLE'] = misp_c["CA_BUNDLE"]
