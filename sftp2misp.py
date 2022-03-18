@@ -8,8 +8,8 @@ import sys
 
 def init(config_file):
     """
-    Initialise les dossiers locaux et la paramètres selon la
-    configuration.
+    Initialize local directory and parameters, according to the
+    config file given at startup.
     """
     sftp_c, misp_c, misc_c = config.get_config(config_file)
     logger = config.get_logger(misc_c["logging_conf"], misc_c["logging_file"])
@@ -25,8 +25,8 @@ def init(config_file):
 
 def misp_init(misp_c):
     """
-    Initialise la connexion à l'instance MISP en instanciant un objet
-    ExpandedPyMISP avec les bons paramètres.
+    Initialize the connexion to MISP instance, instantiating an
+    ExpandedPyMISP object using the config.
     """
     config.set_ssl(misp_c)
     return ExpandedPyMISP(misp_c["url"],
@@ -36,23 +36,23 @@ def misp_init(misp_c):
 
 def cli():
     """
-    Initialise les arguments du scripts.
+    Initialize script arguments.
     """
-    parser = argparse.ArgumentParser(description='Transferer des events d\'un \
-                                                  serveur sftp vers une instance misp')
+    parser = argparse.ArgumentParser(description='Transfer events from \
+                                                  SFTP server to misp \
+                                                  instance')
     parser.add_argument("-c", "--config",
                         required=False, default="./conf/config.yaml",
-                        help="Fichier de configuration différent de config.yaml")
+                        help="Specify a config file different from default ./conf/config.yaml")
     parser.add_argument("-n", "--no-download",
                         action='store_true',
-                        help="Si spécifiée, effectue uniquement l'insertion dans misp")
+                        help="If specify, only perfom the upload to misp action")
     return parser.parse_args()
 
 
 def event_already_exist(misp, event) -> bool:
     """
-    Test si l'évenements en cours  de traitement existe déja dans l'instance
-    MISP.
+    Test if the current event already exists in MISP.
     """
     event_uuid = event.get("uuid")
     return misp.event_exists(event_uuid)
@@ -60,8 +60,8 @@ def event_already_exist(misp, event) -> bool:
 
 def event_not_updated(misp, local_event) -> bool:
     """
-    Test si l'évenements en cours de traitement à été mis à jour par rapport
-    à la version actuelle dans l'instance MISP.
+    Test if the downloaded version of the current event was updated compared
+    to the version on the MISP instance.
     """
     local_event_uuid = local_event.get("uuid")
     local_event_timestamp = local_event.get("timestamp")
@@ -71,6 +71,10 @@ def event_not_updated(misp, local_event) -> bool:
 
 
 def generate_proxy_command(proxy_command, host, host_port, proxy_host, proxy_port):
+    """
+    Replace every placeholders in the config proxy command with its value,
+    in order to create the true command.
+    """
     proxy_command = proxy_command.replace("proxy_host", proxy_host, 1)
     proxy_command = proxy_command.replace("proxy_port", str(proxy_port), 1)
     proxy_command = proxy_command.replace("host", host, 1)
@@ -86,7 +90,10 @@ def get_events(identity_file,
                server_dir,
                local_dir, logger):
     """
-    Récupère la liste des évenements disponibles sur l'instance FTP.
+    Invoke a bash command to get all the file from the sftp server.
+    The choice to use subprocess and the bash command was made because of the
+    limitation regarding the cipher algorithms available in Paramiko.
+    FIXME : Number of file calculation is wrong.
     """
     old_file_number = len([name for name in os.listdir(local_dir) if os.path.isfile(os.path.join(local_dir, name))])
     subprocess.run(["sftp",
@@ -95,13 +102,15 @@ def get_events(identity_file,
                     "-P", f"{port}",
                     f"{user}@{host_ip}:{server_dir}/*.json {local_dir}"], check=True)
     new_file_number = len([name for name in os.listdir(local_dir) if os.path.isfile(os.path.join(local_dir, name))])
-    logger.info(f"{new_file_number-old_file_number} events téléchargés")
+    logger.info(f"{new_file_number-old_file_number} events downloaded")
 
 
 def upload_events(misp, local_dir, logger):
     """
-    Pour chaque events dans le dossier local_dir, instancie un MISPEvent et
-    tente de l'ajouter à l'instance MISP.
+    For each events in the local_dir directory, instantiate a new MISPEvent
+    object, and try pushing it to MISP.
+    We monitor what happens to events, if they got deleted on misp, if
+    they got updated since last upload, or if they are new.
     """
     _event_updated = 0
     _event_not_updated = 0
@@ -115,34 +124,34 @@ def upload_events(misp, local_dir, logger):
         if event_already_exist(misp, event):
             if not event_not_updated(misp, event):
                 rep = misp.update_event(event, pythonify=False)
-                logger.info(f"Event {file} mis à jour")
+                logger.info(f"Event {file} updated")
                 _event_updated += 1
             else:
                 _event_not_updated += 1
-                logger.info(f"Event {file} existant et non mis à jour")
+                logger.info(f"Event {file} already existing and not updated")
         else:
             rep = misp.add_event(event, pythonify=False)
             if "errors" in rep:
-                logger.warning(f"Erreur sur l'event : {file}")
+                logger.warning(f"Error on event: {file}")
                 logger.warning(rep)
                 if rep["errors"][1]["name"] == "Event blocked by event blocklist.":
                     _event_deleted += 1
                 else :
                     _event_error += 1
             else:
-                logger.info(f"Event {file} ajouté")
+                logger.info(f"Event {file} added")
                 _event_added += 1
     logger.info(f"Total : \
-                \n\t {_event_updated} events mis à jour \
-                \n\t {_event_added} events ajoutés \
-                \n\t {_event_deleted} events non ajoutés car dans la blocklist (supprimé précédemment) \
-                \n\t {_event_not_updated} events non mis à jour \
-                \n\t {_event_error} erreurs d'importation")
+                \n\t {_event_updated} events updated \
+                \n\t {_event_added} new events added \
+                \n\t {_event_deleted} events not added (in blocklist)\
+                \n\t {_event_not_updated} events not updated \
+                \n\t {_event_error} errors")
 
 
 def main():
     """
-    main
+    main function
     """
     args = cli()
     logger, sftp_c, misp_c = init(args.config)

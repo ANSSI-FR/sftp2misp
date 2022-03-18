@@ -6,10 +6,10 @@ SFTP:
 
   private_key_file: "path/to/sftp_private_key"
   local_directory: "./output"
-  #Laisser vide ("") pour ne pas utiliser de proxy, la commande est complétée
-  #à l'execution. Celle-ci est personnalisable, les champs
-  #proxy_host, proxy_port host et host_port doivent apparaitre pour être
-  #transformé par le script.
+  #Keep emptty ("") in order not to use a proxy_command. The command is
+  #completed at runtime. It is customizable, only the fields
+  #proxy_host, proxy_port host et host_port needs to be
+  #appearing in order to be replaced by the script.
   proxy_command: "nc -X connect -x proxy_host:proxy_port host host_port"
   proxy_host: "proxy_host"
   proxy_port: proxy_port
