@@ -38,10 +38,14 @@ def cli():
     """
     Initialise les arguments du scripts.
     """
-    parser = argparse.ArgumentParser(description='Transfer event from sftp to misp')
+    parser = argparse.ArgumentParser(description='Transferer des events d\'un \
+                                                  serveur sftp vers une instance misp')
     parser.add_argument("-c", "--config",
                         required=False, default="./conf/config.yaml",
                         help="Fichier de configuration différent de config.yaml")
+    parser.add_argument("-n", "--no-download",
+                        action='store_true',
+                        help="Si spécifiée, effectue uniquement l'insertion dans misp")
     return parser.parse_args()
 
 
@@ -66,34 +70,24 @@ def event_not_updated(misp, local_event) -> bool:
     return local_event_timestamp == misp_event_timestamp
 
 
-def event_deleted(misp, event) -> bool:
-    """
-    Test si l'évenements en cours de traitement à été précédemment supprimé
-    de l'instance MISP.
-    """
-    blocklist = misp.event_blocklists()
-    event_uuid = event.get("uuid")
-    for ev in blocklist:
-        if ev.get("event_uuid") == event_uuid:
-            return True
-    return False
-
-
 def get_events(identity_file,
                proxy_command,
                host_ip,
                port,
                user,
                server_dir,
-               local_dir):
+               local_dir, logger):
     """
     Récupère la liste des évenements disponibles sur l'instance FTP.
     """
+    old_file_number = len([name for name in os.listdir(local_dir) if os.path.isfile(os.path.join(local_dir, name))])
     subprocess.run(["sftp",
                     "-i", f"{identity_file}",
                     f"-o ProxyCommand={proxy_command}",
                     "-P", f"{port}",
                     f"{user}@{host_ip}:{server_dir}/*.json {local_dir}"], check=True)
+    new_file_number = len([name for name in os.listdir(local_dir) if os.path.isfile(os.path.join(local_dir, name))])
+    logger.info(f"{new_file_number-old_file_number} events téléchargés")
 
 
 def upload_events(misp, local_dir, logger):
@@ -112,21 +106,21 @@ def upload_events(misp, local_dir, logger):
         event.load_file(file)
         if event_already_exist(misp, event):
             if not event_not_updated(misp, event):
-                misp.update_event(event, pythonify=False)
+                rep = misp.update_event(event, pythonify=False)
                 logger.info(f"Event {file} mis à jour")
                 _event_updated += 1
             else:
                 _event_not_updated += 1
                 logger.info(f"Event {file} existant et non mis à jour")
-        elif event_deleted(misp, event):
-            _event_deleted += 1
-            logger.info(f"Event {file} supprimé, dans la blocklist")
         else:
             rep = misp.add_event(event, pythonify=False)
             if "errors" in rep:
                 logger.warning(f"Erreur sur l'event : {file}")
-                print(rep)
-                _event_error += 1
+                logger.warning(rep)
+                if rep["errors"][1]["name"] == "Event blocked by event blocklist.":
+                    _event_deleted += 1
+                else :
+                    _event_error += 1
             else:
                 logger.info(f"Event {file} ajouté")
                 _event_added += 1
@@ -145,10 +139,11 @@ def main():
     args = cli()
     logger, sftp_c, misp_c = init(args.config)
     misp = misp_init(misp_c)
-    get_events(sftp_c["private_key_file"],
-              sftp_c["proxy_command"],
-              sftp_c["host"], sftp_c["port"], sftp_c["username"],
-              sftp_c["sftp_directory"], sftp_c["local_directory"])
+    if not args.no_download:
+        get_events(sftp_c["private_key_file"],
+                  sftp_c["proxy_command"],
+                  sftp_c["host"], sftp_c["port"], sftp_c["username"],
+                  sftp_c["sftp_directory"], sftp_c["local_directory"], logger)
     upload_events(misp, sftp_c["local_directory"], logger)
 
 if __name__ == "__main__":

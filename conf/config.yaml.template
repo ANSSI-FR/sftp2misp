@@ -4,7 +4,7 @@ SFTP:
   #Ne pas modifier
   port: 2225
   #Ne pas modifier
-  sftp_directory: "communaute1/data/MS/misp_events"
+  sftp_directory: "data/MS/misp_events"
 
   username: "nom d'utilisateur sftp"
   private_key_file: "chemin vers la clé privée"
