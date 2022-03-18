@@ -1,22 +1,24 @@
 SFTP:
-  #Ne pas modifier
-  host: "51.91.127.144"
-  #Ne pas modifier
-  port: 2225
-  #Ne pas modifier
-  sftp_directory: "data/MS/misp_events"
+  host: "sftp_host"
+  port: sftp_port
+  sftp_directory: "path/to/file/on/server"
+  username: "sftp_username"
 
-  username: "nom d'utilisateur sftp"
-  private_key_file: "chemin vers la clé privée"
+  private_key_file: "path/to/sftp_private_key"
   local_directory: "./output"
-  #Laisser vide ("") pour ne pas utiliser de proxy
-  proxy_command: "nc -X connect -x proxy-03.cossi.internet:3128 51.91.127.144 2225"
+  #Laisser vide ("") pour ne pas utiliser de proxy, la commande est complétée
+  #à l'execution. Celle-ci est personnalisable, les champs
+  #proxy_host, proxy_port host et host_port doivent apparaitre pour être
+  #transformé par le script.
+  proxy_command: "nc -X connect -x proxy_host:proxy_port host host_port"
+  proxy_host: "proxy_host"
+  proxy_port: proxy_port
 
 MISP:
-  url: "MISP URL"
-  key: "MISP API KEY"
-  ssl: false #Use https requests instead of http
-  CA_BUNDLE: "bundle de certificats pour la communication https avec misp (si ssl == true)"
+  url: "misp url"
+  key: "misp API key"
+  ssl: True #Use https requests instead of http
+  CA_BUNDLE: "path/to/misp/certificates"
 
 MISC:
   logging_conf: conf/logging.yaml

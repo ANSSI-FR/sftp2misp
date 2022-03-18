@@ -2,7 +2,7 @@ import config
 from pymisp import ExpandedPyMISP, MISPEvent
 import os
 import argparse
-
+import re
 import subprocess
 import sys
 
@@ -68,6 +68,14 @@ def event_not_updated(misp, local_event) -> bool:
     misp_event = misp.get_event(local_event_uuid, pythonify=True)
     misp_event_timestamp = misp_event.get("timestamp")
     return local_event_timestamp == misp_event_timestamp
+
+
+def generate_proxy_command(proxy_command, host, host_port, proxy_host, proxy_port):
+    proxy_command = proxy_command.replace("proxy_host", proxy_host, 1)
+    proxy_command = proxy_command.replace("proxy_port", str(proxy_port), 1)
+    proxy_command = proxy_command.replace("host", host, 1)
+    proxy_command = proxy_command.replace("host_port", str(host_port), 1)
+    return proxy_command
 
 
 def get_events(identity_file,
@@ -139,9 +147,19 @@ def main():
     args = cli()
     logger, sftp_c, misp_c = init(args.config)
     misp = misp_init(misp_c)
+    proxy_command = ""
+    if sftp_c["proxy_command"] != "":
+        proxy_command = generate_proxy_command(
+                        sftp_c["proxy_command"],
+                        sftp_c["host"],
+                        sftp_c["port"],
+                        sftp_c["proxy_host"],
+                        sftp_c["proxy_port"]
+                        )
+
     if not args.no_download:
         get_events(sftp_c["private_key_file"],
-                  sftp_c["proxy_command"],
+                  proxy_command,
                   sftp_c["host"], sftp_c["port"], sftp_c["username"],
                   sftp_c["sftp_directory"], sftp_c["local_directory"], logger)
     upload_events(misp, sftp_c["local_directory"], logger)
