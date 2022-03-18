@@ -32,7 +32,7 @@ Si le virtualenv Python est activé : `python3 sftp2misp.py ` ou `path/to/venv/b
 
 Options
   - `-c configfile` pour spécifier un fichier de configuration alternatif à `config/config.yaml`
-  - (à venir) `--no-download` pour ne pas exécuter l'étape de téléchargement des fichiers JSON MISP, correspond à l'import des fichiers JSON MISP présents dans le sous-dossier `./output`
+  - `--no-download` pour ne pas exécuter l'étape de téléchargement des fichiers JSON MISP, correspond à l'import des fichiers JSON MISP présents dans le sous-dossier `./output`
 
 # :gb: :us: sftp2misp
 
