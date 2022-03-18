@@ -138,10 +138,10 @@ def main():
     args = cli()
     logger, sftp_c, misp_c = init(args.config)
     misp = misp_init(misp_c)
-    #get_events(sftp_c["private_key_file"],
-    #           sftp_c["proxy_command"],
-    #           sftp_c["host"], sftp_c["port"], sftp_c["username"],
-    #           sftp_c["sftp_directory"], sftp_c["local_directory"])
+    get_events(sftp_c["private_key_file"],
+              sftp_c["proxy_command"],
+              sftp_c["host"], sftp_c["port"], sftp_c["username"],
+              sftp_c["sftp_directory"], sftp_c["local_directory"])
     upload_events(misp, sftp_c["local_directory"], logger)
 
 if __name__ == "__main__":
