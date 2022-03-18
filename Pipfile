@@ -8,6 +8,7 @@ paramiko = "*"
 PyYAML = "*"
 pymisp = "*"
 pyaml = "*"
+asyncssh = "*"
 
 [dev-packages]
 

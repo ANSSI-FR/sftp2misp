@@ -5,7 +5,17 @@ import os
 import json
 import argparse
 from getpass import getpass
+import asyncio, asyncssh, sys
 
+import asyncio
+import stat
+
+import aiosocks
+import asyncssh
+from asyncssh import SFTPClient
+
+import subprocess
+import sys
 
 def init(config_file):
     """
@@ -32,39 +42,14 @@ def misp_init(misp_c):
                           misp_c["key"],
                           misp_c["ssl"])
 
-def ssh_init(sftp_c):
-
-    if sftp_c["private_key_password"] == "" or sftp_c["private_key_password"] is None:
-        key_password = getpass("Mot de passe du fichier de la clé privée : ")
-    else :
-        key_password = sftp_c["private_key_password"]
-    while True:
-        try:
-            key = paramiko.RSAKey.from_private_key_file(sftp_c["private_key_file"], key_password)
-            break
-        except paramiko.ssh_exception.SSHException:
-            try :
-                key = paramiko.ECDSAKey.from_private_key_file(sftp_c["private_key_file"], key_password)
-                break
-            except paramiko.ssh_exception.SSHException:
-                print("Mot de passe erroné")
-                key_password = getpass("Mot de passe du fichier de la clé privée : ")
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    if sftp_c["proxy_command"] == "" or sftp_c["proxy_command"] is None:
-        proxy = None
-    else:
-        proxy = paramiko.proxy.ProxyCommand(sftp_c["proxy_command"])
-    ssh.load_host_keys(sftp_c["known_hosts_file"])
-    ssh.connect(sftp_c["host"], port=sftp_c["port"], username=sftp_c["username"], pkey=key, sock=proxy)
-    return ssh
 
 def cli():
     parser = argparse.ArgumentParser(description='Transfer event from sftp to misp')
     parser.add_argument("-c", "--config",
-                         required=False, default="./conf/config.yaml",
-                         help="Fichier de configuration différent de config.yaml")
+                        required=False, default="./conf/config.yaml",
+                        help="Fichier de configuration différent de config.yaml")
     return parser.parse_args()
+
 
 def event_already_exist(misp, event) -> bool:
     """
@@ -94,46 +79,67 @@ def event_deleted(misp, event) -> bool:
     return False
 
 
+def get_events(identity_file,
+               proxy_command,
+               ip,
+               port,
+               user,
+               server_dir,
+               local_dir):
+    subprocess.run(["sftp",
+                    "-i", f"{identity_file}",
+                    f"-o ProxyCommand={proxy_command}",
+                    "-P", f"{port}",
+                    f"{user}@{ip}:{server_dir}/5dd*.json {local_dir}"])
+
+
+def upload_events(misp, logger):
+    """
+
+    """
+    _event_updated = 0
+    _event_not_updated = 0
+    _event_added = 0
+    _event_deleted = 0
+    local_ouput = "output"
+    for filename in os.listdir(local_ouput):
+        file = os.path.join(local_ouput, filename)
+        event = MISPEvent()
+        event.load_file(file)
+        if event_already_exist(misp, event):
+            if not event_not_updated(misp, event):
+                misp.update_event(event, pythonify=True)
+                logger.info("Event %s updated", file)
+                _event_updated += 1
+            else:
+                _event_not_updated += 1
+                logger.info("Event %s was not updated", file)
+        elif event_deleted(misp, event):
+            _event_deleted += 1
+            logger.info("Event %s is in blocklist", file)
+        else:
+            misp.add_event(event, pythonify=False)
+            logger.info("Event %s added", file)
+            _event_added += 1
+    logger.info(f"Total : \
+                \n\t {_event_updated} events mis à jour \
+                \n\t {_event_added} events ajoutés \
+                \n\t {_event_deleted} events non ajoutés car dans la blocklist (supprimé précédemment) \
+                \n\t {_event_not_updated} events non mis à jour")
+
+
 def main():
     """
     main
     """
     args = cli()
     logger, sftp_c, misp_c = init(args.config)
-    ssh = ssh_init(sftp_c)
-    _event_added = 0
-    _event_not_updated = 0
-    _event_updated = 0
-    _event_deleted = 0
-    # with ssh.open_sftp() as sftp:
-    #     sftp.chdir(sftp_c["sftp_directory"])
-    #     content = sftp.listdir_attr()
-    #     misp = misp_init(misp_c)
-    #     for file in content:
-    #         if(file.filename.split('.')[-1] == "json"):
-    #             local_file_name = sftp_c["local_directory"] + "/" + file.filename
-    #             sftp.get(file.filename, local_file_name)
-    #             event=MISPEvent()
-    #             event.load_file(local_file_name)
-    #             if event_already_exist(misp, event):
-    #                 if not event_not_updated(misp, event):
-    #                     misp.update_event(event, pythonify=True)
-    #                     logger.info("Event %s updated", file.filename)
-    #                     _event_updated+=1
-    #                 else:
-    #                     _event_not_updated+=1
-    #                     logger.info("Event %s was not updated", file.filename)
-    #             elif event_deleted(misp, event):
-    #                 _event_deleted+=1
-    #                 logger.info("Event %s is in blocklist", file.filename)
-    #             else:
-    #                 misp.add_event(event, pythonify=True)
-    #                 logger.info("Event %s added", file.filename)
-    #                 _event_added+=1
-    #     logger.info("Total : \n %s events mis à jour \n %s events ajoutés \n %s events non ajoutés car dans la blocklist (supprimé précédemment) \n %s events non mis à jour", _event_updated, _event_added, _event_deleted, _event_not_updated)
-
-
-
+    misp = misp_init(misp_c)
+    get_events(sftp_c["private_key_file"],
+               sftp_c["proxy_command"],
+               sftp_c["host"], sftp_c["port"], sftp_c["username"],
+               sftp_c["sftp_directory"], sftp_c["local_directory"])
+    upload_events(misp, logger)
 
 if __name__ == "__main__":
     # execute only if run as a script
