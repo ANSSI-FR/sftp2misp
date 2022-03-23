@@ -38,29 +38,29 @@ Options
 
 Automation script to download JSON MISP files from a SFTP server and import them via API to a MISP instance.
 
-## Requirements
+## Requirements
 
 - a SFTP server with SSH key-based authentication
 - a MISP server (> 2.4.150) with API key-based authentication (Sync User role)
-- a Linux server with python 3.8 to run the script
+- a Linux server with python 3.8 to run the script 
 
 ## Installation
 
 Preferably, use a Python virtual environment (virtualenv) Python to install dependencies :
 
-- create virtualenv : `python3 -m venv path/to/venv`  
-- activate virtualenv : `source path/to/venv/bin/activate`  
-- install dependencies : `pip install -r requirements.txt`  
+- Create virtualenv : `python3 -m venv path/to/venv`  
+- Activate virtualenv : `source path/to/venv/bin/activate`  
+- Install dependencies : `pip install -r requirements.txt`  
 
 ## Configuration
 
 Default configuration file for environment variables and parameters is `conf/config.yaml`.
-- copy configuration file template : `cp conf/config.template.yaml conf/config.yaml`
-- edit `conf/config.yaml` depending on your environment, help is available in comments.
+- Copy configuration file template : `cp conf/config.template.yaml conf/config.yaml`
+- Edit `conf/config.yaml` depending on your environment, help is available in comments.
 
 By default :
-- download folder for JSON MISP files is `./output`.
-- logging file is `./log/sftp.log`.
+- Download folder for JSON MISP files is `./output`.
+- Logging file is `./log/sftp.log`.
 
 ## Run
 
