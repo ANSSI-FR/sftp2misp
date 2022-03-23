@@ -18,7 +18,7 @@ De préférence, faire usage d'un environnement virtuel (virtualenv) Python pour
 
 ## Configuration
 
-Le fichier de configuration des variables d'environnement et des paramètres est `conf/config.yaml`.
+Le fichier de configuration par défaut des variables d'environnement et des paramètres est `conf/config.yaml`.
 - Copier le fichier de configuration modèle : `cp conf/config.template.yaml conf/config.yaml`
 - Éditer `conf/config.yaml` en fonction de votre environnement, l'aide est fournie dans les commentaires.
 
@@ -40,8 +40,32 @@ Automation script to download JSON MISP files from a SFTP server and import them
 
 ## Requirements
 
+- a SFTP server with SSH key-based authentication
+- a MISP server (> 2.4.150) with API key-based authentication (Sync User role)
+- a Linux server with python 3.8 to run the script
+
 ## Installation
+
+Preferably, use a Python virtual environment (virtualenv) Python to install dependencies :
+
+- create virtualenv : `python3 -m venv path/to/venv`  
+- activate virtualenv : `source path/to/venv/bin/activate`  
+- install dependencies : `pip install -r requirements.txt`  
 
 ## Configuration
 
+Default configuration file for environment variables and parameters is `conf/config.yaml`.
+- copy configuration file template : `cp conf/config.template.yaml conf/config.yaml`
+- edit `conf/config.yaml` depending on your environment, help is available in comments.
+
+By default :
+- download folder for JSON MISP files is `./output`.
+- logging file is `./log/sftp.log`.
+
 ## Run
+
+If Python virtualenv is activated : `python3 sftp2misp.py ` otherwise `path/to/venv/bin/python3 sftp2misp.py`.
+
+Options
+  - `-c configfile` to specify an alternative configuration file to `config/config.yaml`
+  - `--no-download` to bypass JSON MISP files download, and just import into MISP the JSON MISP files from subfolder `./output`
