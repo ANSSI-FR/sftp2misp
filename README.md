@@ -31,8 +31,8 @@ Par défaut :
 Si le virtualenv Python est activé : `python3 sftp2misp.py ` ou `path/to/venv/bin/python3 sftp2misp.py` sinon.
 
 Options
-  - `-c configfile` pour spécifier un fichier de configuration alternatif à `config/config.yaml`
-  - `--no-download` pour ne pas exécuter l'étape de téléchargement des fichiers JSON MISP, correspond à l'import des fichiers JSON MISP présents dans le sous-dossier `./output`
+  - `-c, --config CONFIG_FILE` pour spécifier un fichier de configuration `CONFIG_FILE` alternatif à `config/config.yaml`
+  - `-n, --no-download` pour ne pas exécuter l'étape de téléchargement des fichiers JSON MISP, correspond à l'import des fichiers JSON MISP présents dans le sous-dossier `./output`
 
 # :gb: :us: sftp2misp
 
@@ -67,5 +67,5 @@ By default :
 If Python virtualenv is activated : `python3 sftp2misp.py ` otherwise `path/to/venv/bin/python3 sftp2misp.py`.
 
 Options
-  - `-c configfile` to specify an alternative configuration file to `config/config.yaml`
-  - `--no-download` to bypass JSON MISP files download, and just import into MISP the JSON MISP files from subfolder `./output`
+  - `-c, --config CONFIG_FILE` to specify `CONFIG_FILE` as an alternative configuration file to `config/config.yaml`
+  - `-n, --no-download` to bypass JSON MISP files download, and just import into MISP the JSON MISP files from subfolder `./output`
