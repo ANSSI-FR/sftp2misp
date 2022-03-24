@@ -35,7 +35,7 @@ Options
   - `-c, --config CONFIG_FILE` pour spécifier un fichier de configuration `CONFIG_FILE` alternatif à `config/config.yaml`
   - `-n, --no-download` pour ne pas exécuter l'étape de téléchargement des fichiers JSON MISP, correspond à l'import des fichiers JSON MISP présents dans le sous-dossier `./misp-json`
 
-Lors de la connexion au serveur SFTP, si votre clé privée à été générée avec un mot de passe, celui-ci vous sera demandé de façon interactive, ce qui n'est pas géré par le script.
+Lors de la connexion au serveur SFTP, si votre clé privée à été générée avec un mot de passe, vous devrez le rentrer manuellement.
 
 # :gb: :us: sftp2misp
 
@@ -73,4 +73,4 @@ Options
   - `-c, --config CONFIG_FILE` to specify `CONFIG_FILE` as an alternative configuration file to `config/config.yaml`
   - `-n, --no-download` to bypass JSON MISP files download, and just import into MISP the JSON MISP files from subfolder `./misp-json`
 
-When connecting to the SFTP server, if your private key has been generated with a password, you will be asked for it interactively, which is not handled by the script.
+When connecting to the SFTP server, if your private key has been generated with a password, you will need to enter it manually.
