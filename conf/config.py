@@ -2,7 +2,7 @@ import logging
 import logging.config
 import os
 import sys
-
+import datetime
 import yaml
 
 
@@ -25,8 +25,10 @@ def get_logger(log_conf_file, log_file):
     except:
         print("Unexpected error: ", sys.exc_info()[0])
         raise
+    now = datetime.datetime.now()
+    filename = now.strftime(log_file + '_%d%m%Y.log')
     logging.config.dictConfig(get_logging_config(log_conf_file)["LOGGING"])
-    file_handler = logging.handlers.RotatingFileHandler(log_file, 'a',
+    file_handler = logging.handlers.RotatingFileHandler(filename, 'a',
                             maxBytes=10485760, backupCount=20,
                             encoding="utf8")
     file_handler.setLevel(1)
@@ -38,7 +40,7 @@ def get_logger(log_conf_file, log_file):
         if isinstance(hdlr,logging.FileHandler):
             logger.removeHandler(hdlr)
     logger.addHandler(file_handler)
-    logger.info('Chargement du fichier de configuration terminé')
+    logger.info("Configuration file loading completed")
     return logger
 
 
