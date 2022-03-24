@@ -16,7 +16,10 @@ def init(config_file):
     try:
         os.mkdir(sftp_c["local_directory"])
     except FileExistsError:
-        pass
+        for root, dirs, files in os.walk(sftp_c["local_directory"]):
+            for file in files:
+                os.remove(os.path.join(root, file))
+
     except:
         logger.info("Unexpected error: %s", sys.exc_info()[0])
         raise
