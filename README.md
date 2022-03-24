@@ -24,7 +24,7 @@ Le fichier de configuration par défaut des variables d'environnement et des par
 
 Par défaut :
 - le dossier de sauvegarde des fichiers JSON MISP téléchargés est `./misp-json`.
-- le fichier de journalisation est `./log/sftp.log`.
+- le fichier de journalisation est `./log/sftp_log_datedujour.log`.
 
 ## Exécution
 
@@ -60,7 +60,7 @@ Default configuration file for environment variables and parameters is `conf/con
 
 By default :
 - Download folder for JSON MISP files is `./misp-json`.
-- Logging file is `./log/sftp.log`.
+- Logging file is `./log/sftp_log_dateoftoday.log`.
 
 ## Run
 
