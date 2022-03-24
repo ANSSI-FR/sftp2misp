@@ -23,7 +23,7 @@ Le fichier de configuration par défaut des variables d'environnement et des par
 - Éditer `conf/config.yaml` en fonction de votre environnement, l'aide est fournie dans les commentaires.
 
 Par défaut :
-- le dossier de sauvegarde des fichiers JSON MISP téléchargés est `./output`.
+- le dossier de sauvegarde des fichiers JSON MISP téléchargés est `./misp-json`.
 - le fichier de journalisation est `./log/sftp.log`.
 
 ## Exécution
@@ -32,7 +32,7 @@ Si le virtualenv Python est activé : `python3 sftp2misp.py ` ou `path/to/venv/b
 
 Options
   - `-c, --config CONFIG_FILE` pour spécifier un fichier de configuration `CONFIG_FILE` alternatif à `config/config.yaml`
-  - `-n, --no-download` pour ne pas exécuter l'étape de téléchargement des fichiers JSON MISP, correspond à l'import des fichiers JSON MISP présents dans le sous-dossier `./output`
+  - `-n, --no-download` pour ne pas exécuter l'étape de téléchargement des fichiers JSON MISP, correspond à l'import des fichiers JSON MISP présents dans le sous-dossier `./misp-json`
 
 # :gb: :us: sftp2misp
 
@@ -59,7 +59,7 @@ Default configuration file for environment variables and parameters is `conf/con
 - Edit `conf/config.yaml` depending on your environment, help is available in comments.
 
 By default :
-- Download folder for JSON MISP files is `./output`.
+- Download folder for JSON MISP files is `./misp-json`.
 - Logging file is `./log/sftp.log`.
 
 ## Run
@@ -68,4 +68,4 @@ If Python virtualenv is activated : `python3 sftp2misp.py ` otherwise `path/to/v
 
 Options
   - `-c, --config CONFIG_FILE` to specify `CONFIG_FILE` as an alternative configuration file to `config/config.yaml`
-  - `-n, --no-download` to bypass JSON MISP files download, and just import into MISP the JSON MISP files from subfolder `./output`
+  - `-n, --no-download` to bypass JSON MISP files download, and just import into MISP the JSON MISP files from subfolder `./misp-json`
