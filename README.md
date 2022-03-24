@@ -16,6 +16,7 @@ De préférence, faire usage d'un environnement virtuel (virtualenv) Python pour
 - Activation du virtualenv : `source path/to/venv/bin/activate`  
 - Installation des dépendances : `pip install -r requirements.txt`  
 
+
 ## Configuration
 
 Le fichier de configuration par défaut des variables d'environnement et des paramètres est `conf/config.yaml`.
@@ -33,6 +34,8 @@ Si le virtualenv Python est activé : `python3 sftp2misp.py ` ou `path/to/venv/b
 Options
   - `-c, --config CONFIG_FILE` pour spécifier un fichier de configuration `CONFIG_FILE` alternatif à `config/config.yaml`
   - `-n, --no-download` pour ne pas exécuter l'étape de téléchargement des fichiers JSON MISP, correspond à l'import des fichiers JSON MISP présents dans le sous-dossier `./misp-json`
+
+Lors de la connexion au serveur SFTP, si votre clé privée à été générée avec un mot de passe, celui-ci vous sera demandé de façon interactive, ce qui n'est pas géré par le script.
 
 # :gb: :us: sftp2misp
 
@@ -69,3 +72,5 @@ If Python virtualenv is activated : `python3 sftp2misp.py ` otherwise `path/to/v
 Options
   - `-c, --config CONFIG_FILE` to specify `CONFIG_FILE` as an alternative configuration file to `config/config.yaml`
   - `-n, --no-download` to bypass JSON MISP files download, and just import into MISP the JSON MISP files from subfolder `./misp-json`
+
+When connecting to the SFTP server, if your private key has been generated with a password, you will be asked for it interactively, which is not handled by the script.
