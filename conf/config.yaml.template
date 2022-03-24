@@ -22,4 +22,5 @@ MISP:
 
 MISC:
   logging_conf: conf/logging.yaml
-  logging_file: log/sftp.log
+  #current date is appendend to filename : log/sftp_log_01011970.log
+  logging_file: log/sftp_log
