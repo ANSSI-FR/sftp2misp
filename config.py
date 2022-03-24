@@ -27,7 +27,6 @@ def get_logger(log_conf_file, log_file):
         raise
     now = datetime.datetime.now()
     filename = now.strftime(log_file + '_%d%m%Y.log')
-    print(filename)
     logging.config.dictConfig(get_logging_config(log_conf_file)["LOGGING"])
     file_handler = logging.handlers.RotatingFileHandler(filename, 'a',
                             maxBytes=10485760, backupCount=20,
