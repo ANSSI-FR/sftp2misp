@@ -40,7 +40,7 @@ def get_logger(log_conf_file, log_file):
         if isinstance(hdlr,logging.FileHandler):
             logger.removeHandler(hdlr)
     logger.addHandler(file_handler)
-    logger.info('Chargement du fichier de configuration terminé')
+    logger.info("Configuration file loading completed")
     return logger
 
 
