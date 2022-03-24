@@ -4,11 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-paramiko = "*"
-PyYAML = "*"
 pymisp = "*"
 pyaml = "*"
-asyncssh = "*"
 
 [dev-packages]
 

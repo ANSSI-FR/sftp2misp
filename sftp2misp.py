@@ -1,4 +1,4 @@
-import config
+import conf.config as config
 from pymisp import ExpandedPyMISP, MISPEvent
 import os
 import argparse
@@ -46,7 +46,8 @@ def cli():
                         help="Specify a config file different from default ./conf/config.yaml")
     parser.add_argument("-n", "--no-download",
                         action='store_true',
-                        help="If specify, only perfom the upload to misp action")
+                        help="If specified, only perfom the upload to misp action")
+
     return parser.parse_args()
 
 
