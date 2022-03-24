@@ -5,7 +5,7 @@ Script d'automatisation de la récupération de fichiers JSON MISP sur un serveu
 ## Pré-requis
 
 - un serveur SFTP avec authentification par clé SSH
-- une instance MISP (> 2.4.150) avec authentification par clé d'API (rôle Sync User)
+- une instance MISP (> 2.4.130) avec authentification par clé d'API (rôle Sync User)
 - un serveur Linux disposant de python 3.8 pour l'exécution du script
 
 ## Installation
@@ -41,7 +41,7 @@ Automation script to download JSON MISP files from a SFTP server and import them
 ## Requirements
 
 - a SFTP server with SSH key-based authentication
-- a MISP server (> 2.4.150) with API key-based authentication (Sync User role)
+- a MISP server (> 2.4.130) with API key-based authentication (Sync User role)
 - a Linux server with python 3.8 to run the script 
 
 ## Installation
