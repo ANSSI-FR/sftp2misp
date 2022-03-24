@@ -14,10 +14,10 @@ def init(config_file, delete_local_directory_content):
     sftp_c, misp_c, misc_c = config.get_config(config_file)
     logger = config.get_logger(misc_c["logging_conf"], misc_c["logging_file"])
     try:
-        os.mkdir(sftp_c["local_directory"])
+        os.mkdir(misc_c["local_directory"])
     except FileExistsError:
         if delete_local_directory_content:
-            for root, dirs, files in os.walk(sftp_c["local_directory"]):
+            for root, dirs, files in os.walk(misc_c["local_directory"]):
                 for file in files:
                     os.remove(os.path.join(root, file))
         else:
@@ -25,7 +25,7 @@ def init(config_file, delete_local_directory_content):
     except:
         logger.info("Unexpected error: %s", sys.exc_info()[0])
         raise
-    return logger, sftp_c, misp_c
+    return logger, sftp_c, misp_c, misc_c
 
 
 def misp_init(misp_c):
@@ -163,7 +163,7 @@ def main():
     main function
     """
     args = cli()
-    logger, sftp_c, misp_c = init(args.config, args.delete_local_directory_content)
+    logger, sftp_c, misp_c, misc_c = init(args.config, args.delete_local_directory_content)
     misp = misp_init(misp_c)
     proxy_command = ""
     if sftp_c["proxy_command"] != "":
@@ -179,8 +179,8 @@ def main():
         get_events(sftp_c["private_key_file"],
                   proxy_command,
                   sftp_c["host"], sftp_c["port"], sftp_c["username"],
-                  sftp_c["sftp_directory"], sftp_c["local_directory"], logger)
-    upload_events(misp, sftp_c["local_directory"], logger)
+                  sftp_c["sftp_directory"], misc_c["local_directory"], logger)
+    upload_events(misp, misc_c["local_directory"], logger)
 
 if __name__ == "__main__":
     # execute only if run as a script

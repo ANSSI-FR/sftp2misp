@@ -5,12 +5,11 @@ SFTP:
   username: "sftp_username"
 
   private_key_file: "path/to/sftp_private_key"
-  local_directory: "./output"
-  #Keep emptty ("") in order not to use a proxy_command. The command is
-  #completed at runtime. It is customizable, only the fields
-  #proxy_host, proxy_port host et host_port needs to be
-  #appearing in order to be replaced by the script.
-  proxy_command: "nc -X connect -x proxy_host:proxy_port host host_port"
+
+  proxy_command: "nc -X connect -x proxy_host:proxy_port host host_port"   #Keep emptty ("") in order not to use a proxy_command. The command is
+                                                                           #completed at runtime. It is customizable, you can change the way it
+                                                                           #connects to the proxy, you just need to specify proxy_host, proxy_port
+                                                                           #host and host_port so that the script replace them with the desired values.
   proxy_host: "proxy_host"
   proxy_port: proxy_port
 
@@ -21,6 +20,7 @@ MISP:
   CA_BUNDLE: "path/to/misp/certificates"
 
 MISC:
+  local_directory: "./json_misp"
   logging_conf: conf/logging.yaml
   #current date is appended to filename : log/sftp_log_01011970.log
   logging_file: log/sftp_log
