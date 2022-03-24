@@ -6,7 +6,7 @@ import re
 import subprocess
 import sys
 
-def init(config_file):
+def init(config_file, delete_local_directory_content):
     """
     Initialize local directory and parameters, according to the
     config file given at startup.
@@ -16,10 +16,12 @@ def init(config_file):
     try:
         os.mkdir(sftp_c["local_directory"])
     except FileExistsError:
-        for root, dirs, files in os.walk(sftp_c["local_directory"]):
-            for file in files:
-                os.remove(os.path.join(root, file))
-
+        if delete_local_directory_content:
+            for root, dirs, files in os.walk(sftp_c["local_directory"]):
+                for file in files:
+                    os.remove(os.path.join(root, file))
+        else:
+            pass
     except:
         logger.info("Unexpected error: %s", sys.exc_info()[0])
         raise
@@ -50,6 +52,9 @@ def cli():
     parser.add_argument("-n", "--no-download",
                         action='store_true',
                         help="If specified, only perfom the upload to misp action")
+    parser.add_argument("-d", "--delete_local_directory_content",
+                        action='store_true',
+                        help="If specified, erase the content of the local directory where events will be downloaded")
 
     return parser.parse_args()
 
@@ -158,7 +163,7 @@ def main():
     main function
     """
     args = cli()
-    logger, sftp_c, misp_c = init(args.config)
+    logger, sftp_c, misp_c = init(args.config, args.delete_local_directory_content)
     misp = misp_init(misp_c)
     proxy_command = ""
     if sftp_c["proxy_command"] != "":
