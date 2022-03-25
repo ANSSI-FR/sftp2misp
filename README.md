@@ -74,4 +74,5 @@ Options
   - `-c, --config CONFIG_FILE` to specify `CONFIG_FILE` as an alternative configuration file to `config/config.yaml`
   - `-n, --no-download` to bypass JSON MISP files download, and just import into MISP the JSON MISP files from subfolder `./misp-json`
   - `-e, --empty_local_directory` to empty the events download folder. 
+  
 When connecting to the SFTP server, if your private key has been generated with a password, you will need to enter it manually.
