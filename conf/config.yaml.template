@@ -6,7 +6,7 @@ SFTP:
 
   private_key_file: "path/to/sftp_private_key"
 
-  proxy_command: "nc -X connect -x proxy_host:proxy_port host host_port"   #Keep emptty ("") in order not to use a proxy_command. The command is
+  proxy_command: "nc -X connect -x proxy_host:proxy_port host host_port"   #Keep empty ("") in order not to use a proxy_command. The command is
                                                                            #completed at runtime. It is customizable, you can change the way it
                                                                            #connects to the proxy, you just need to specify proxy_host, proxy_port
                                                                            #host and host_port so that the script replace them with the desired values.
