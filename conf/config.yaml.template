@@ -16,11 +16,10 @@ SFTP:
 MISP:
   url: "misp url"
   key: "misp API key"
-  ssl: True #Use https requests instead of http
+  ssl: True  #Use https requests instead of http
   CA_BUNDLE: "path/to/misp/certificates"
 
 MISC:
   local_directory: "./json_misp"
   logging_conf: conf/logging.yaml
-  #current date is appended to filename : log/sftp_log_01011970.log
-  logging_file: log/sftp_log
+  logging_file: log/sftp_log  #current date is appended to filename : log/sftp_log_01011970.log
