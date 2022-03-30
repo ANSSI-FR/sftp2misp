@@ -73,7 +73,7 @@ If Python virtualenv is activated : `python3 sftp2misp.py ` otherwise `path/to/v
 
 Options
   - `-h, --help` to get help
-  - `-c CONFIG, --config CONFIG` Specify CONFIG as an alternative configuration file to `./conf/config.yaml`
+  - `-c CONFIG, --config CONFIG` Specify `CONFIG` as an alternative configuration file to `./conf/config.yaml`
   - `-n, --no-download ` If specified, bypass JSON MISP files download, and just import the local JSON MISP files into MISP instance
   - `-d, --delete-local-directory-content` If specified, erase the content of the `local_directory` before JSON MISP files are downloaded
   
