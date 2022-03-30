@@ -12,7 +12,7 @@ def init(config_file, delete_local_directory_content):
     config file given at startup.
     """
     sftp_c, misp_c, misc_c = config.get_config(config_file)
-    logger = config.get_logger(misc_c["logging_conf"], misc_c["logging_file"])
+    logger = config.get_logger(misc_c["logging_conf"], misc_c["logging_directory"], misc_c["logging_suffix"])
     try:
         os.mkdir(misc_c["local_directory"])
     except FileExistsError:
@@ -43,18 +43,18 @@ def cli():
     """
     Initialize script arguments.
     """
-    parser = argparse.ArgumentParser(description='Transfer events from \
+    parser = argparse.ArgumentParser(description='Transfer JSON MISP files from \
                                                   SFTP server to misp \
                                                   instance')
     parser.add_argument("-c", "--config",
                         required=False, default="./conf/config.yaml",
-                        help="Specify a config file different from default ./conf/config.yaml")
+                        help="Specify CONFIG as an alternative configuration file to ./conf/config.yaml")
     parser.add_argument("-n", "--no-download",
                         action='store_true',
-                        help="If specified, only perfom the upload to misp action")
-    parser.add_argument("-d", "--delete_local_directory_content",
+                        help="If specified, bypass JSON MISP files download, and just import the local JSON MISP files into MISP instance")
+    parser.add_argument("-d", "--delete-local-directory-content",
                         action='store_true',
-                        help="If specified, erase the content of the local directory where events will be downloaded")
+                        help=" If specified, erase the content of the local_directory before JSON MISP files are downloaded")
 
     return parser.parse_args()
 

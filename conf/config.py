@@ -17,16 +17,18 @@ def get_logging_config(log_conf_file):
         return yaml.safe_load(log_conf)
 
 
-def get_logger(log_conf_file, log_file):
+def get_logger(log_conf_file, log_directory, log_suffix):
     try:
-        os.mkdir(os.path.dirname(log_file))
+        os.mkdir(log_directory)
     except FileExistsError:
         pass
     except:
         print("Unexpected error: ", sys.exc_info()[0])
         raise
     now = datetime.datetime.now()
-    filename = now.strftime(log_file + '_%d%m%Y.log')
+    if log_directory[-1] != "/":
+        log_directory += "/"
+    filename = now.strftime(f"{log_directory}%d%m%Y_{log_suffix}")
     logging.config.dictConfig(get_logging_config(log_conf_file)["LOGGING"])
     file_handler = logging.handlers.RotatingFileHandler(filename, 'a',
                             maxBytes=10485760, backupCount=20,
