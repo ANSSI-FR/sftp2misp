@@ -28,7 +28,7 @@ def get_logger(log_conf_file, log_directory, log_suffix):
     now = datetime.datetime.now()
     if log_directory[-1] != "/":
         log_directory += "/"
-    filename = now.strftime(f"{log_directory}%d%m%Y_{log_suffix}")
+    filename = now.strftime(f"{log_directory}%Y%m%d_{log_suffix}")
     logging.config.dictConfig(get_logging_config(log_conf_file)["LOGGING"])
     file_handler = logging.handlers.RotatingFileHandler(filename, 'a',
                             maxBytes=10485760, backupCount=20,

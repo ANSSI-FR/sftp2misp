@@ -17,6 +17,7 @@ def init(config_file, delete_local_directory_content):
         os.mkdir(misc_c["local_directory"])
     except FileExistsError:
         if delete_local_directory_content:
+            logger.info("Deleting local directory content")
             for root, dirs, files in os.walk(misc_c["local_directory"]):
                 for file in files:
                     os.remove(os.path.join(root, file))
