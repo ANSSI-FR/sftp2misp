@@ -24,7 +24,7 @@ Le fichier de configuration par défaut des variables d'environnement et des par
 - Éditer `conf/config.yaml` en fonction de votre environnement, l'aide est fournie dans les commentaires.
 
 Par défaut :
-- le dossier de sauvegarde des fichiers JSON MISP téléchargés est `./misp-json`.
+- le dossier de sauvegarde des fichiers JSON MISP téléchargés est `./json_misp`.
 - le fichier de journalisation est `./log/sftp_log_datedujour.log`.
 
 ## Exécution
@@ -63,7 +63,7 @@ Default configuration file for environment variables and parameters is `conf/con
 - Edit `conf/config.yaml` depending on your environment, help is available in comments.
 
 By default :
-- Download folder for JSON MISP files is `./misp-json`.
+- Download folder for JSON MISP files is `./json_misp`.
 - Logging file is `./log/sftp_log_dateoftoday.log`.
 
 ## Run
@@ -74,4 +74,5 @@ Options
   - `-c, --config CONFIG_FILE` to specify `CONFIG_FILE` as an alternative configuration file to `config/config.yaml`
   - `-n, --no-download` to bypass JSON MISP files download, and just import into MISP the JSON MISP files from subfolder `./misp-json`
   - `-e, --empty_local_directory` to empty the events download folder. 
+  
 When connecting to the SFTP server, if your private key has been generated with a password, you will need to enter it manually.
