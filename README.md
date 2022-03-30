@@ -20,11 +20,11 @@ De préférence, faire usage d'un environnement virtuel (virtualenv) Python pour
 ## Configuration
 
 Le fichier de configuration par défaut des variables d'environnement et des paramètres est `conf/config.yaml`.
-- Copier le fichier de configuration modèle : `cp conf/config.template.yaml conf/config.yaml`
+- Copier le fichier de configuration modèle : `cp conf/config.template.yaml conf/config.yaml`.
 - Éditer `conf/config.yaml` en fonction de votre environnement, l'aide est fournie dans les commentaires.
 
 Par défaut :
-- le dossier de sauvegarde des fichiers JSON MISP téléchargés est `./json_misp`.
+- le dossier de sauvegarde des fichiers JSON MISP téléchargés est `./json_misp` ;
 - le fichier de journalisation est `./log/YYYYMMDD_sftp2misp.log`.
 
 ## Exécution
@@ -60,7 +60,7 @@ Preferably, use a Python virtual environment (virtualenv) Python to install depe
 ## Configuration
 
 Default configuration file for environment variables and parameters is `conf/config.yaml`.
-- Copy configuration file template : `cp conf/config.template.yaml conf/config.yaml`
+- Copy configuration file template : `cp conf/config.template.yaml conf/config.yaml`.
 - Edit `conf/config.yaml` depending on your environment, help is available in comments.
 
 By default :
@@ -73,7 +73,7 @@ If Python virtualenv is activated : `python3 sftp2misp.py ` otherwise `path/to/v
 
 Options
   - `-h, --help` to get help
-  - `-c CONFIG, --config CONFIG_FILE` Specify CONFIG as an alternative configuration file to `./conf/config.yaml`
+  - `-c CONFIG, --config CONFIG` Specify CONFIG as an alternative configuration file to `./conf/config.yaml`
   - `-n, --no-download ` If specified, bypass JSON MISP files download, and just import the local JSON MISP files into MISP instance
   - `-d, --delete-local-directory-content` If specified, erase the content of the `local_directory` before JSON MISP files are downloaded
   
