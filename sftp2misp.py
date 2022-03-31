@@ -61,6 +61,13 @@ def cli():
     return parser.parse_args()
 
 
+def check_args(args, logger):
+    if args.delete_local_directory_content and args.no_download:
+        print("\t\t\t\33[6m \033[1m \33[35m ಠ_ಠ huh \033[0m")
+        logger.info("Options no-download and delete_local_directory_content are incompatible")
+        exit(1)
+
+
 def event_already_exist(misp, event) -> bool:
     """
     Test if the current event already exists in MISP.
@@ -166,6 +173,7 @@ def main():
     """
     args = cli()
     logger, sftp_c, misp_c, misc_c = init(args.config, args.delete_local_directory_content)
+    check_args(args, logger)
     misp = misp_init(misp_c)
     proxy_command = ""
     if sftp_c["proxy_command"] != "":
