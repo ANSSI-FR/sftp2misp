@@ -1,0 +1,18 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Environments
+env/
+venv/
+
+#logs
+log/
+
+#json_misp
+json_misp/
+
+
