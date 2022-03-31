@@ -44,9 +44,10 @@ def cli():
     """
     Initialize script arguments.
     """
-    parser = argparse.ArgumentParser(description='Transfer JSON MISP files from \
-                                                  SFTP server to misp \
-                                                  instance')
+    parser = argparse.ArgumentParser(description='Automation script to download \
+                                                  JSON MISP files from a SFTP \
+                                                  server and import them via \
+                                                  API to a MISP instance.')
     parser.add_argument("-c", "--config",
                         required=False, default="./conf/config.yaml",
                         help="Specify CONFIG as an alternative configuration file to ./conf/config.yaml")
