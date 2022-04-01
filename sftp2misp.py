@@ -184,12 +184,13 @@ def main():
                         sftp_c["proxy_host"],
                         sftp_c["proxy_port"]
                         )
-
+    print(sftp_c["sftp_directories"])
     if not args.no_download:
-        get_events(sftp_c["private_key_file"],
-                  proxy_command,
-                  sftp_c["host"], sftp_c["port"], sftp_c["username"],
-                  sftp_c["sftp_directory"], misc_c["local_directory"], logger)
+        for sftp_directory in sftp_c["sftp_directories"]:
+            get_events(sftp_c["private_key_file"],
+                    proxy_command,
+                    sftp_c["host"], sftp_c["port"], sftp_c["username"],
+                    sftp_directory, misc_c["local_directory"], logger)
     upload_events(misp, misc_c["local_directory"], logger)
 
 if __name__ == "__main__":
