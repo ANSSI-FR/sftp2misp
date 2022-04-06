@@ -6,17 +6,18 @@ import re
 import subprocess
 import sys
 
-def init(config_file, delete_local_directory_content):
+def init(args):
     """
     Initialize local directory and parameters, according to the
     config file given at startup.
     """
-    sftp_c, misp_c, misc_c = config.get_config(config_file)
+    sftp_c, misp_c, misc_c = config.get_config(args.config)
     logger = config.get_logger(misc_c["logging_conf"], misc_c["logging_directory"], misc_c["logging_suffix"])
+    check_args(args, logger)
     try:
         os.mkdir(misc_c["local_directory"])
     except FileExistsError:
-        if delete_local_directory_content:
+        if args.delete_local_directory_content:
             logger.info("Deleting local directory content")
             for root, dirs, files in os.walk(misc_c["local_directory"]):
                 for file in files:
@@ -159,12 +160,12 @@ def upload_events(misp, local_dir, logger):
             else:
                 logger.info(f"Event {file} added")
                 _event_added += 1
-    logger.info(f"Total : \
-                \n\t {_event_updated} events updated \
-                \n\t {_event_added} new events added \
-                \n\t {_event_deleted} events not added (in blocklist)\
-                \n\t {_event_not_updated} events not updated \
-                \n\t {_event_error} errors")
+    logger.info("Total : "\
+                f"\n{' '*62} {_event_updated} events updated" \
+                f"\n{' '*62} {_event_added} new events added" \
+                f"\n{' '*62} {_event_deleted} events not added (in blocklist)"\
+                f"\n{' '*62} {_event_not_updated} events not updated" \
+                f"\n{' '*62} {_event_error} errors")
 
 
 def main():
@@ -172,8 +173,7 @@ def main():
     main function
     """
     args = cli()
-    logger, sftp_c, misp_c, misc_c = init(args.config, args.delete_local_directory_content)
-    check_args(args, logger)
+    logger, sftp_c, misp_c, misc_c = init(args)
     misp = misp_init(misp_c)
     proxy_command = ""
     if sftp_c["proxy_command"] != "":
