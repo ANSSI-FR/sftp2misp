@@ -1,5 +1,6 @@
 import conf.config as config
 from pymisp import ExpandedPyMISP, MISPEvent
+from pymisp.exceptions import MISPServerError
 import os
 import argparse
 import re
@@ -112,14 +113,15 @@ def get_events(identity_file,
     Invoke a bash command to get all the file from the sftp server.
     The choice to use subprocess and the bash command was made because of the
     limitation regarding the cipher algorithms available in Paramiko.
-    FIXME : Number of file calculation is wrong.
+    FIXME : Number of file calculation is "wrong".
     """
     old_file_number = len([name for name in os.listdir(local_dir) if os.path.isfile(os.path.join(local_dir, name))])
-    subprocess.run(["sftp",
+    proc = subprocess.run(["sftp",
                     "-i", f"{identity_file}",
                     f"-o ProxyCommand={proxy_command}",
                     "-P", f"{port}",
                     f"{user}@{host_ip}:{server_dir}/*.json {local_dir}"], check=True)
+    print(proc)
     new_file_number = len([name for name in os.listdir(local_dir) if os.path.isfile(os.path.join(local_dir, name))])
     logger.info(f"{new_file_number-old_file_number} events downloaded")
 
@@ -138,28 +140,34 @@ def upload_events(misp, local_dir, logger):
     _event_error = 0
     for filename in os.listdir(local_dir):
         file = os.path.join(local_dir, filename)
-        event = MISPEvent()
-        event.load_file(file)
-        if event_already_exist(misp, event):
-            if not event_not_updated(misp, event):
-                rep = misp.update_event(event, pythonify=False)
-                logger.info(f"Event {file} updated")
-                _event_updated += 1
+        if file.endswith('.json'):
+            event = MISPEvent()
+            event.load_file(file)
+            logger.info(f"Loading {file}")
+            if event_already_exist(misp, event):
+                if not event_not_updated(misp, event):
+                    rep = misp.update_event(event, pythonify=False)
+                    logger.info(f"Event {file} updated")
+                    _event_updated += 1
+                else:
+                    _event_not_updated += 1
+                    logger.info(f"Event {file} already existing and not updated")
             else:
-                _event_not_updated += 1
-                logger.info(f"Event {file} already existing and not updated")
-        else:
-            rep = misp.add_event(event, pythonify=False)
-            if "errors" in rep:
-                logger.warning(f"Error on event: {file}")
-                logger.warning(rep)
-                if rep["errors"][1]["name"] == "Event blocked by event blocklist.":
-                    _event_deleted += 1
-                else :
+                try:
+                    rep = misp.add_event(event, pythonify=False)
+                    if "errors" in rep:
+                        logger.warning(f"Error on event: {file}")
+                        logger.warning(rep)
+                        if rep["errors"][1]["name"] == "Event blocked by event blocklist.":
+                            _event_deleted += 1
+                        else :
+                            _event_error += 1
+                    else:
+                        logger.info(f"Event {file} added")
+                        _event_added += 1
+                except MISPServerError:
+                    logger.warning(f"Server error on event {file}")
                     _event_error += 1
-            else:
-                logger.info(f"Event {file} added")
-                _event_added += 1
     logger.info("Total : "\
                 f"\n{' '*62} {_event_updated} events updated" \
                 f"\n{' '*62} {_event_added} new events added" \
@@ -184,9 +192,9 @@ def main():
                         sftp_c["proxy_host"],
                         sftp_c["proxy_port"]
                         )
-    print(sftp_c["sftp_directories"])
     if not args.no_download:
         for sftp_directory in sftp_c["sftp_directories"]:
+            logger.info(f"Downloading events from {sftp_directory}")
             get_events(sftp_c["private_key_file"],
                     proxy_command,
                     sftp_c["host"], sftp_c["port"], sftp_c["username"],
