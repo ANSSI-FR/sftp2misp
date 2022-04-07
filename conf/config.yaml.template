@@ -1,7 +1,8 @@
 SFTP:
   host: "sftp_host"
   port: sftp_port
-  sftp_directory: "path/to/file/on/server"
+  sftp_directories:
+    - "path/to/file/on/server"
   username: "sftp_username"
 
   private_key_file: "path/to/sftp_private_key"
