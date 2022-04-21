@@ -1,4 +1,6 @@
-# :fr: sftp2misp
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+# :fr: sftp2misp 
 
 Script d'automatisation de la récupération de fichiers JSON MISP sur un serveur SFTP pour import par API sur une instance MISP.
 
