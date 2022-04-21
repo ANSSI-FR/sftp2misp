@@ -20,7 +20,7 @@ De préférence, faire usage d'un environnement virtuel (virtualenv) Python pour
 ## Configuration
 
 Le fichier de configuration par défaut des variables d'environnement et des paramètres est `conf/config.yaml`.
-- Copier le fichier de configuration modèle : `cp conf/config.template.yaml conf/config.yaml`.
+- Copier le fichier de configuration modèle : `cp conf/config.yaml.template conf/config.yaml`.
 - Éditer `conf/config.yaml` en fonction de votre environnement, l'aide est fournie dans les commentaires.
 
 Par défaut :
@@ -60,7 +60,7 @@ Preferably, use a Python virtual environment (virtualenv) Python to install depe
 ## Configuration
 
 Default configuration file for environment variables and parameters is `conf/config.yaml`.
-- Copy configuration file template : `cp conf/config.template.yaml conf/config.yaml`.
+- Copy configuration file template : `cp conf/config.yaml.template conf/config.yaml`.
 - Edit `conf/config.yaml` depending on your environment, help is available in comments.
 
 By default :
