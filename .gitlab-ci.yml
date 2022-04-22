@@ -5,7 +5,7 @@ unit-test-job:
   stage: test
   image: local-docker.artifactory.cossi.internet/python:3.9-bullseye
   script:
-    - pip install black, pylint
+    - pip install black pylint
     - black . --check --verbose --diff --color
     - python3 -m pylint sftp2misp.py
   tags:
