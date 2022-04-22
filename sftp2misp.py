@@ -8,7 +8,6 @@ import pymisp.exceptions
 from conf import config
 
 
-
 def init(args):
     """
     Initialize local directory and parameters, according to the

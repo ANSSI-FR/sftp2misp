@@ -7,6 +7,6 @@ unit-test-job:
   script:
     - pip install black pylint
     - black . --check --verbose --diff --color
-    - python3 -m pylint sftp2misp.py
+    - python3 -m pylint --exit-zero sftp2misp.py
   tags:
      - docker
