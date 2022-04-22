@@ -3,6 +3,9 @@ stages:
 
 unit-test-job:
   stage: test
+  image: local-docker.artifactory.cossi.internet/python:3.9-bullseye
   script:
     - pip install black
     - black . --check --verbose --diff --color
+  tags:
+     - docker
