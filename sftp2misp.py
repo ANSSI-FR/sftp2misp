@@ -1,3 +1,5 @@
+"""Automation script to download JSON MISP files from a SFTP
+   server and import them via API to a MISP instance."""
 import os
 import argparse
 import subprocess
@@ -28,9 +30,6 @@ def init(args):
                     os.remove(os.path.join(root, file))
         else:
             pass
-    except:
-        logger.error(f"Unexpected error on local filesystem: {sys.exc_info()[0]}")
-        sys.exit(1)
     return logger, sftp_c, misp_c, misc_c
 
 
@@ -48,8 +47,7 @@ def misp_init(misp_c, logger):
                 misp_c["ssl"],
                 proxies={"http": None, "https": None},
             )
-        else:
-            return ExpandedPyMISP(misp_c["url"], misp_c["key"], misp_c["ssl"])
+        return ExpandedPyMISP(misp_c["url"], misp_c["key"], misp_c["ssl"])
     except pymisp.exceptions.PyMISPError as err:
         logger.error(err)
         sys.exit(1)
@@ -60,10 +58,8 @@ def cli():
     Initialize script arguments.
     """
     parser = argparse.ArgumentParser(
-        description="Automation script to download \
-                                                  JSON MISP files from a SFTP \
-                                                  server and import them via \
-                                                  API to a MISP instance."
+        description="""Automation script to download JSON MISP files from a SFTP
+                       server and import them via API to a MISP instance."""
     )
     parser.add_argument(
         "-c",
@@ -76,13 +72,15 @@ def cli():
         "-n",
         "--no-download",
         action="store_true",
-        help="If specified, bypass JSON MISP files download, and just import the local JSON MISP files into MISP instance",
+        help="""If specified, bypass JSON MISP files download, and just import the
+                local JSON MISP files into MISP instance""",
     )
     parser.add_argument(
         "-d",
         "--delete-local-directory-content",
         action="store_true",
-        help="If specified, erase the content of the local_directory before JSON MISP files are downloaded",
+        help="""If specified, erase the content of the local_directory
+                before JSON MISP files are downloaded""",
     )
     parser.add_argument(
         "-q",
@@ -95,6 +93,9 @@ def cli():
 
 
 def check_args(args, logger):
+    """
+    Check for incompatible arguments
+    """
     if args.delete_local_directory_content and args.no_download:
         print("\t\t\t\33[6m \033[1m \33[35m ಠ_ಠ huh \033[0m")
         logger.warning(
@@ -254,7 +255,7 @@ def main():
         )
     if not args.no_download:
         for sftp_directory in sftp_c["sftp_directories"]:
-            logger.info(f"Downloading events from {sftp_directory}")
+            logger.info("Downloading events from %s", sftp_directory)
             get_events(
                 sftp_c["private_key_file"],
                 proxy_command,
