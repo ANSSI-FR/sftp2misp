@@ -43,7 +43,12 @@ def misp_init(misp_c, logger):
     config.set_ssl(misp_c)
     try:
         if misp_c["bypass_proxy"]:
-            return ExpandedPyMISP(misp_c["url"], misp_c["key"], misp_c["ssl"],proxies={"http":None, "https":None})
+            return ExpandedPyMISP(
+                misp_c["url"],
+                misp_c["key"],
+                misp_c["ssl"],
+                proxies={"http": None, "https": None},
+            )
         else:
             return ExpandedPyMISP(misp_c["url"], misp_c["key"], misp_c["ssl"])
     except pymisp.exceptions.PyMISPError as err:
@@ -119,7 +124,9 @@ def event_not_updated(misp, local_event) -> bool:
     return local_event_timestamp == misp_event_timestamp
 
 
-def generate_proxy_command(proxy_command, host, host_port, proxy_host, proxy_port, logger):
+def generate_proxy_command(
+    proxy_command, host, host_port, proxy_host, proxy_port, logger
+):
     """
     Replace every placeholders in the config proxy command with its value,
     in order to create the true command.
@@ -233,7 +240,7 @@ def main():
     logger, sftp_c, misp_c, misc_c = init(args)
     if args.quiet:
         warnings.filterwarnings("once")
-    else :
+    else:
         warnings.filterwarnings("always")
     misp = misp_init(misp_c, logger)
     proxy_command = ""
@@ -244,7 +251,7 @@ def main():
             sftp_c["port"],
             sftp_c["proxy_host"],
             sftp_c["proxy_port"],
-            logger
+            logger,
         )
     if not args.no_download:
         for sftp_directory in sftp_c["sftp_directories"]:
