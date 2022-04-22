@@ -1,4 +1,4 @@
-# :fr: sftp2misp
+# :fr: sftp2misp 
 
 Script d'automatisation de la récupération de fichiers JSON MISP sur un serveur SFTP pour import par API sur une instance MISP.
 
@@ -20,12 +20,15 @@ De préférence, faire usage d'un environnement virtuel (virtualenv) Python pour
 ## Configuration
 
 Le fichier de configuration par défaut des variables d'environnement et des paramètres est `conf/config.yaml`.
-- Copier le fichier de configuration modèle : `cp conf/config.template.yaml conf/config.yaml`.
+- Copier le fichier de configuration modèle : `cp conf/config.yaml.template conf/config.yaml`.
 - Éditer `conf/config.yaml` en fonction de votre environnement, l'aide est fournie dans les commentaires.
 
 Par défaut :
 - le dossier de sauvegarde des fichiers JSON MISP téléchargés est `./json_misp` ;
 - le fichier de journalisation est `./log/YYYYMMDD_sftp2misp.log`.
+
+La journalisation est configurable dans le fichier `conf/logging.yaml`:  
+- L'option `level` de `console` et `file` permet de choisir le filtre d'affichage de la journalisation, respectivement dans la console et dans les fichiers de journalisation. Les options sont `DEBUG`, `INFO` (par défaut), `WARNING` et `ERROR` à paramètrer selon vos besoins.
 
 ## Exécution
 
@@ -60,12 +63,15 @@ Preferably, use a Python virtual environment (virtualenv) Python to install depe
 ## Configuration
 
 Default configuration file for environment variables and parameters is `conf/config.yaml`.
-- Copy configuration file template : `cp conf/config.template.yaml conf/config.yaml`.
+- Copy configuration file template : `cp conf/config.yaml.template conf/config.yaml`.
 - Edit `conf/config.yaml` depending on your environment, help is available in comments.
 
 By default :
 - Download folder for JSON MISP files is `./json_misp`.
 - Logging file is `./log/YYYYMMDD_sftp2misp.log`.
+
+Logging is configurable in file `conf/logging.yaml`:  
+- Option `level` in `console` and `file` allows to choose the logging filter, respectively in terminal and in logging files. Options are `DEBUG`, `INFO` (default), `WARNING` et `ERROR` to be set according to your needs.
 
 ## Run
 
