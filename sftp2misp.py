@@ -1,15 +1,14 @@
 import conf.config as config
 from pymisp import ExpandedPyMISP, MISPEvent
-from pymisp.exceptions import MISPServerError
+import pymisp.exceptions
 import os
 import argparse
 import re
 import subprocess
 import sys
-
 import warnings
 
-# warnings.filterwarnings("ignore")
+warnings.filterwarnings("once")
 
 
 def init(args):
@@ -33,18 +32,22 @@ def init(args):
         else:
             pass
     except:
-        logger.info("Unexpected error: %s", sys.exc_info()[0])
-        raise
+        logger.error(f"Unexpected error on local filesystem: {sys.exc_info()[0]}")
+        exit(1)
     return logger, sftp_c, misp_c, misc_c
 
 
-def misp_init(misp_c):
+def misp_init(misp_c, logger):
     """
     Initialize the connexion to MISP instance, instantiating an
     ExpandedPyMISP object using the config.
     """
     config.set_ssl(misp_c)
-    return ExpandedPyMISP(misp_c["url"], misp_c["key"], misp_c["ssl"])
+    try:
+        return ExpandedPyMISP(misp_c["url"], misp_c["key"], misp_c["ssl"])
+    except pymisp.exceptions.PyMISPError as err:
+        logger.error(err)
+        exit(1)
 
 
 def cli():
@@ -76,6 +79,7 @@ def cli():
         action="store_true",
         help=" If specified, erase the content of the local_directory before JSON MISP files are downloaded",
     )
+    parser.add_argument('-v', '--verbose', action='count', default=0)
 
     return parser.parse_args()
 
@@ -83,7 +87,7 @@ def cli():
 def check_args(args, logger):
     if args.delete_local_directory_content and args.no_download:
         print("\t\t\t\33[6m \033[1m \33[35m ಠ_ಠ huh \033[0m")
-        logger.info(
+        logger.warning(
             "Options no-download and delete_local_directory_content are incompatible"
         )
         exit(1)
@@ -109,7 +113,7 @@ def event_not_updated(misp, local_event) -> bool:
     return local_event_timestamp == misp_event_timestamp
 
 
-def generate_proxy_command(proxy_command, host, host_port, proxy_host, proxy_port):
+def generate_proxy_command(proxy_command, host, host_port, proxy_host, proxy_port, logger):
     """
     Replace every placeholders in the config proxy command with its value,
     in order to create the true command.
@@ -118,6 +122,7 @@ def generate_proxy_command(proxy_command, host, host_port, proxy_host, proxy_por
     proxy_command = proxy_command.replace("proxy_port", str(proxy_port), 1)
     proxy_command = proxy_command.replace("host", host, 1)
     proxy_command = proxy_command.replace("host_port", str(host_port), 1)
+    logger.debug(f"returned proxy command {proxy_command}")
     return proxy_command
 
 
@@ -202,7 +207,7 @@ def upload_events(misp, local_dir, logger):
                     else:
                         logger.info(f"Event {file} added")
                         _event_added += 1
-                except MISPServerError:
+                except pymisp.exceptions.MISPServerError:
                     logger.warning(f"Server error on event {file}")
                     _event_error += 1
     logger.info(
@@ -221,7 +226,8 @@ def main():
     """
     args = cli()
     logger, sftp_c, misp_c, misc_c = init(args)
-    misp = misp_init(misp_c)
+    print(args.verbose)
+    misp = misp_init(misp_c, logger)
     proxy_command = ""
     if sftp_c["proxy_command"] != "":
         proxy_command = generate_proxy_command(
@@ -230,6 +236,7 @@ def main():
             sftp_c["port"],
             sftp_c["proxy_host"],
             sftp_c["proxy_port"],
+            logger
         )
     if not args.no_download:
         for sftp_directory in sftp_c["sftp_directories"]:

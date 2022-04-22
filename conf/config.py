@@ -45,6 +45,7 @@ def get_logger(log_conf_file, log_directory, log_suffix):
             logger.removeHandler(hdlr)
     logger.addHandler(file_handler)
     logger.info("Configuration file loading completed")
+    logging.captureWarnings(True)
     return logger
 
 
