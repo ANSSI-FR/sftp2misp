@@ -8,8 +8,6 @@ import subprocess
 import sys
 import warnings
 
-warnings.filterwarnings("once")
-
 
 def init(args):
     """
@@ -77,9 +75,14 @@ def cli():
         "-d",
         "--delete-local-directory-content",
         action="store_true",
-        help=" If specified, erase the content of the local_directory before JSON MISP files are downloaded",
+        help="If specified, erase the content of the local_directory before JSON MISP files are downloaded",
     )
-    parser.add_argument('-v', '--verbose', action='count', default=0)
+    parser.add_argument(
+        "-q",
+        "--quiet",
+        action="store_true",
+        help="Reduce spam in logs by showing warnings only once",
+    )
 
     return parser.parse_args()
 
@@ -154,7 +157,6 @@ def get_events(
         ],
         check=True,
     )
-    print(proc)
     new_file_number = len(
         [
             name
@@ -226,7 +228,10 @@ def main():
     """
     args = cli()
     logger, sftp_c, misp_c, misc_c = init(args)
-    print(args.verbose)
+    if args.quiet:
+        warnings.filterwarnings("once")
+    else :
+        warnings.filterwarnings("always")
     misp = misp_init(misp_c, logger)
     proxy_command = ""
     if sftp_c["proxy_command"] != "":
