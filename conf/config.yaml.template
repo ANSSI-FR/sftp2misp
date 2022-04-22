@@ -6,7 +6,6 @@ SFTP:
   username: "sftp_username"
 
   private_key_file: "path/to/sftp_private_key"
-
   proxy_command: "nc -X connect -x proxy_host:proxy_port host host_port"   #Keep empty ("") in order not to use a proxy_command. The command is
                                                                            #completed at runtime. It is customizable, you can change the way it
                                                                            #connects to the proxy, you just need to specify proxy_host, proxy_port
@@ -17,6 +16,7 @@ SFTP:
 MISP:
   url: "misp url"
   key: "misp API key"
+  bypass_proxy: False #Set to true to bypass proxies access to misp
   ssl: True  #Use https requests instead of http
   CA_BUNDLE: "path/to/misp/certificates"
 

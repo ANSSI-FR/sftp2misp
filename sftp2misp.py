@@ -42,7 +42,10 @@ def misp_init(misp_c, logger):
     """
     config.set_ssl(misp_c)
     try:
-        return ExpandedPyMISP(misp_c["url"], misp_c["key"], misp_c["ssl"])
+        if misp_c["bypass_proxy"]:
+            return ExpandedPyMISP(misp_c["url"], misp_c["key"], misp_c["ssl"],proxies={"http":None, "https":None})
+        else:
+            return ExpandedPyMISP(misp_c["url"], misp_c["key"], misp_c["ssl"])
     except pymisp.exceptions.PyMISPError as err:
         logger.error(err)
         exit(1)
