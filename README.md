@@ -29,6 +29,9 @@ Par défaut :
 - le dossier de sauvegarde des fichiers JSON MISP téléchargés est `./json_misp` ;
 - le fichier de journalisation est `./log/YYYYMMDD_sftp2misp.log`.
 
+La journalisation est configurable dans le fichier `conf/logging.yaml`:  
+- L'option `level` de `console` et `file` permet de choisir le filtre d'affichage de la journalisation, respectivement dans la console et dans les fichiers de journalisation. Les options sont `DEBUG`, `INFO` (par défaut), `WARNING` et `ERROR` à paramètrer selon vos besoins.
+
 ## Exécution
 
 Si le virtualenv Python est activé : `python3 sftp2misp.py ` ou `path/to/venv/bin/python3 sftp2misp.py` sinon.
@@ -68,6 +71,9 @@ Default configuration file for environment variables and parameters is `conf/con
 By default :
 - Download folder for JSON MISP files is `./json_misp`.
 - Logging file is `./log/YYYYMMDD_sftp2misp.log`.
+
+Logging is configurable in file `conf/logging.yaml`:  
+- Option `level` in `console` and `file` allows to choose the logging filter, respectively in terminal and in logging files. Options are `DEBUG`, `INFO` (default), `WARNING` et `ERROR` to be set according to your needs.
 
 ## Run
 
