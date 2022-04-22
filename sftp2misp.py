@@ -1,12 +1,12 @@
-import conf.config as config
-from pymisp import ExpandedPyMISP, MISPEvent
-import pymisp.exceptions
 import os
 import argparse
-import re
 import subprocess
 import sys
 import warnings
+from pymisp import ExpandedPyMISP, MISPEvent
+import pymisp.exceptions
+from conf import config
+
 
 
 def init(args):
@@ -24,14 +24,14 @@ def init(args):
     except FileExistsError:
         if args.delete_local_directory_content:
             logger.info("Deleting local directory content")
-            for root, dirs, files in os.walk(misc_c["local_directory"]):
+            for root, _, files in os.walk(misc_c["local_directory"]):
                 for file in files:
                     os.remove(os.path.join(root, file))
         else:
             pass
     except:
         logger.error(f"Unexpected error on local filesystem: {sys.exc_info()[0]}")
-        exit(1)
+        sys.exit(1)
     return logger, sftp_c, misp_c, misc_c
 
 
@@ -53,7 +53,7 @@ def misp_init(misp_c, logger):
             return ExpandedPyMISP(misp_c["url"], misp_c["key"], misp_c["ssl"])
     except pymisp.exceptions.PyMISPError as err:
         logger.error(err)
-        exit(1)
+        sys.exit(1)
 
 
 def cli():
@@ -101,7 +101,7 @@ def check_args(args, logger):
         logger.warning(
             "Options no-download and delete_local_directory_content are incompatible"
         )
-        exit(1)
+        sys.exit(1)
 
 
 def event_already_exist(misp, event) -> bool:
@@ -155,7 +155,7 @@ def get_events(
             if os.path.isfile(os.path.join(local_dir, name))
         ]
     )
-    proc = subprocess.run(
+    subprocess.run(
         [
             "sftp",
             "-i",
