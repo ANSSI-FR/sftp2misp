@@ -35,7 +35,7 @@ def init(args):
 
 def misp_init(misp_c, logger):
     """
-    Initialize the connexion to MISP instance, instantiating an
+    Initialize the connection to MISP instance, instantiating an
     ExpandedPyMISP object using the config.
     """
     config.set_ssl(misp_c)
@@ -72,14 +72,14 @@ def cli():
         "-n",
         "--no-download",
         action="store_true",
-        help="""If specified, bypass JSON MISP files download, and just import the
+        help="""Bypass JSON MISP files download, and just import the
                 local JSON MISP files into MISP instance""",
     )
     parser.add_argument(
         "-d",
         "--delete-local-directory-content",
         action="store_true",
-        help="""If specified, erase the content of the local_directory
+        help="""Erase the content of the local_directory
                 before JSON MISP files are downloaded""",
     )
     parser.add_argument(
@@ -143,7 +143,7 @@ def get_events(
     identity_file, proxy_command, host_ip, port, user, server_dir, local_dir, logger
 ):
     """
-    Invoke a bash command to get all the file from the sftp server.
+    Invoke a bash command to get all the files from the sftp server.
     The choice to use subprocess and the bash command was made because of the
     limitation regarding the cipher algorithms available in Paramiko.
     FIXME : Number of file calculation is "wrong".
@@ -179,9 +179,9 @@ def get_events(
 
 def upload_events(misp, local_dir, logger):
     """
-    For each events in the local_dir directory, instantiate a new MISPEvent
+    For each event in the local_dir directory, instantiate a new MISPEvent
     object, and try pushing it to MISP.
-    We monitor what happens to events, if they got deleted on misp, if
+    We monitor what happens to events, if they got deleted on MISP, if
     they got updated since last upload, or if they are new.
     """
     _event_updated = 0
