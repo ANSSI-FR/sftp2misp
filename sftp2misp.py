@@ -16,9 +16,7 @@ def init(args):
     config file given at startup.
     """
     sftp_c, misp_c, misc_c = config.get_config(args.config)
-    logger = config.get_logger(
-        misc_c["logging_conf"], misc_c["logging_directory"], misc_c["logging_suffix"]
-    )
+    logger = config.create_logger(misc_c)
     check_args(args, logger)
     try:
         os.mkdir(misc_c["local_directory"])

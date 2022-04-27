@@ -23,5 +23,3 @@ MISP:
 MISC:
   local_directory: "./json_misp"
   logging_conf: conf/logging.yaml
-  logging_directory: "log/" #final format of the file is directory/YYYYMMDD_suffix
-  logging_suffix: "sftp2misp.log"
