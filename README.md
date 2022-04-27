@@ -39,8 +39,9 @@ Options
   - `-c CONFIG, --config CONFIG` pour spécifier un fichier de configuration `CONFIG` alternatif à `config/config.yaml`
   - `-n, --no-download` pour ne pas exécuter l'étape de téléchargement des fichiers JSON MISP, correspond à l'import des fichiers JSON MISP dans MISP
   - `-d, --delete-local-directory-content` pour effacer le contenu du répertoire `local_directory` avant le téléchargement des fichiers JSON MISP
+  - `-q, --quiet` pour réduire à une occurrence chaque message d'avertissement dans les ficheirs de journalisation 
 
-Lors de la connexion au serveur SFTP, si votre clé privée à été générée avec un mot de passe, vous devrez le rentrer manuellement.
+Lors de la connexion au serveur SFTP, si votre clé privée est protégée par un mot de passe, vous devrez le saisir manuellement.
 
 # :gb: :us: sftp2misp
 
@@ -54,7 +55,7 @@ Automation script to download JSON MISP files from a SFTP server and import them
 
 ## Installation
 
-Preferably, use a Python virtual environment (virtualenv) Python to install dependencies :
+Preferably, use a Python virtual environment (virtualenv) to install dependencies :
 
 - Create virtualenv : `python3 -m venv path/to/venv`  
 - Activate virtualenv : `source path/to/venv/bin/activate`  
@@ -71,7 +72,7 @@ By default :
 - Logging file is `./log/YYYYMMDD_sftp2misp.log`.
 
 Logging is configurable in file `conf/logging.yaml`:  
-- Option `level` in `console` and `file` allows to choose the logging filter, respectively in terminal and in logging files. Options are `DEBUG`, `INFO` (default), `WARNING` et `ERROR` to be set according to your needs.
+- Option `level` in `console` and `file` allows to choose the logging filter, respectively in terminal and in logging files. Options are `DEBUG`, `INFO` (default), `WARNING` and `ERROR` to be set according to your needs.
 
 ## Run
 
@@ -80,7 +81,8 @@ If Python virtualenv is activated : `python3 sftp2misp.py ` otherwise `path/to/v
 Options
   - `-h, --help` to get help
   - `-c CONFIG, --config CONFIG` Specify `CONFIG` as an alternative configuration file to `./conf/config.yaml`
-  - `-n, --no-download ` If specified, bypass JSON MISP files download, and just import the local JSON MISP files into MISP instance
-  - `-d, --delete-local-directory-content` If specified, erase the content of the `local_directory` before JSON MISP files are downloaded
+  - `-n, --no-download ` Bypass JSON MISP files download, and just import the local JSON MISP files into MISP instance
+  - `-d, --delete-local-directory-content` Erase the content of the `local_directory` before JSON MISP files are downloaded
+  - `-q, --quiet` Reduce spam in logs by showing warnings only once
   
-When connecting to the SFTP server, if your private key has been generated with a password, you will need to enter it manually.
+When connecting to the SFTP server, if your private key is protected by a password, you shall enter it manually.
