@@ -12,9 +12,24 @@ def check_config(config):
     """
     Check compliance of given config file
     """
-    sftp_entries = {"host":str, "port":int, "sftp_directories":list, "username":str, "private_key_file":str, "proxy_command":str, "proxy_host":str, "proxy_port":int}
-    misp_entries = {"url":str, "key":str, "bypass_proxy":bool, "ssl":bool, "CA_BUNDLE":str}
-    misc_entries = {"local_directory":str, "logging_conf":str}
+    sftp_entries = {
+        "host": str,
+        "port": int,
+        "sftp_directories": list,
+        "username": str,
+        "private_key_file": str,
+        "proxy_command": str,
+        "proxy_host": str,
+        "proxy_port": int,
+    }
+    misp_entries = {
+        "url": str,
+        "key": str,
+        "bypass_proxy": bool,
+        "ssl": bool,
+        "CA_BUNDLE": str,
+    }
+    misc_entries = {"local_directory": str, "logging_conf": str}
     super_map = [sftp_entries, misp_entries, misc_entries]
     super_super_map = ["SFTP", "MISP", "MISC"]
     error = []
@@ -23,7 +38,9 @@ def check_config(config):
             if entry not in config[super_super_map[i]]:
                 error.append(f"{entry} of config.yaml.template is not in your config")
             elif type(config[super_super_map[i]][entry]) != item[entry]:
-                error.append(f"{type(config[super_super_map[i]][entry])} is not {item[entry]}")
+                error.append(
+                    f"{type(config[super_super_map[i]][entry])} is not {item[entry]}"
+                )
         for entry in config[super_super_map[i]]:
             if not entry in item:
                 error.append(f"{entry} of your config is not in config.yaml.template")
@@ -39,7 +56,9 @@ def get_config(conf_file):
         errors = check_config(conf)
         if errors:
             entry = ["List of entries", "Entry"]
-            print(f"Your configuration file {conf_file} is not compliant with config.yaml.template : entries are missing or not supported. Please review and fix it.")
+            print(
+                f"Your configuration file {conf_file} is not compliant with config.yaml.template : entries are missing or not supported. Please review and fix it."
+            )
             print(f"{entry[len(errors) == 1]} not compliant :")
             for error in errors:
                 print(error)
