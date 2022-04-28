@@ -10,7 +10,7 @@ import yaml
 
 def check_config(config):
     """
-    Check if every entry of given config file is in the list of needed
+    Check compliance of given config file
     """
     sftp_entries = {"host":str, "port":int, "sftp_directories":list, "username":str, "private_key_file":str, "proxy_command":str, "proxy_host":str, "proxy_port":int}
     misp_entries = {"url":str, "key":str, "bypass_proxy":bool, "ssl":bool, "CA_BUNDLE":str}
@@ -32,6 +32,7 @@ def check_config(config):
 
 def get_config(conf_file):
     """
+    Open, load and check for errors in configuration file
     """
     with open(conf_file, "r") as config_file:
         conf = yaml.safe_load(config_file)
@@ -48,10 +49,11 @@ def get_config(conf_file):
 
 def create_logger(config_log):
     """
+    Open and load configuration file for logging
     """
     with open(config_log["logging_conf"], "r") as log_conf_file:
         log_conf = yaml.safe_load(log_conf_file)
-        path, file = os.path.split(log_conf["LOGGING"]["handlers"]["file"]["filename"])
+        path, _ = os.path.split(log_conf["LOGGING"]["handlers"]["file"]["filename"])
         try:
             os.mkdir(path)
         except FileExistsError:
@@ -68,6 +70,7 @@ def create_logger(config_log):
 
 def set_ssl(misp_c):
     """
+    Set environnment variable in order to use https communication
     """
     if misp_c["ssl"]:
         os.environ["REQUESTS_CA_BUNDLE"] = misp_c["CA_BUNDLE"]
