@@ -7,7 +7,7 @@ SFTP:
 
   private_key_file: "path/to/sftp_private_key"
   proxy_command: "nc -X connect -x proxy_host:proxy_port host host_port"        #By default, keep as it is.
-                                                                                #Empty ("") in order not to use a proxy_command. 
+                                                                                #Empty (proxy_command: "") in order not to use a proxy_command. 
                                                                                 #/!\ Expert mode : You can customize the proxy command.
                                                                                 #Variables proxy_host, proxy_port, host and host_port
                                                                                 #in command are set at runtime with values you specified in config.
