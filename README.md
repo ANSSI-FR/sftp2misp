@@ -1,4 +1,4 @@
-# :fr: sftp2misp 
+TESTETS# :fr: sftp2misp 
 
 Script d'automatisation de la récupération de fichiers JSON MISP sur un serveur SFTP pour import par API sur une instance MISP.
 
