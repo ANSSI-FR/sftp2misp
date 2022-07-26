@@ -191,8 +191,8 @@ def upload_events(misp, local_dir, logger):
         file = os.path.join(local_dir, filename)
         if file.endswith(".json"):
             event = MISPEvent()
-            event.load_file(file)
             logger.info(f"Loading {file}")
+            event.load_file(file)
             if event_already_exist(misp, event):
                 if not event_not_updated(misp, event):
                     rep = misp.update_event(event, pythonify=False)
