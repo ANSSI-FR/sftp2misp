@@ -10,8 +10,11 @@ Script d'automatisation de la récupération de fichiers JSON MISP sur un serveu
 
 ## Installation
 
-De préférence, faire usage d'un environnement virtuel (virtualenv) Python pour l'installation des dépendances :
+De préférence, faire usage d'un environnement virtuel (virtualenv) Python pour l'installation des dépendances.
 
+Pour une installation automatisée, exécuter `make init` à la racine du répertoire projet.
+
+Pour une installation pas à pas :
 - Création du virtualenv : `python3 -m venv path/to/venv`  
 - Activation du virtualenv : `source path/to/venv/bin/activate`  
 - Installation des dépendances : `pip install -r requirements.txt`  
@@ -55,8 +58,11 @@ Automation script to download JSON MISP files from a SFTP server and import them
 
 ## Installation
 
-Preferably, use a Python virtual environment (virtualenv) to install dependencies :
+Preferably, use a Python virtual environment (virtualenv) to install dependencies.
 
+For automated installation, run `make init` in project root directory.
+
+For a step by step installation :
 - Create virtualenv : `python3 -m venv path/to/venv`  
 - Activate virtualenv : `source path/to/venv/bin/activate`  
 - Install dependencies : `pip install -r requirements.txt`  
