@@ -1,4 +1,4 @@
-# :fr: sftp2misp 
+# :fr: sftp2misp
 
 Script d'automatisation de la récupération de fichiers JSON MISP sur un serveur SFTP pour import par API sur une instance MISP.
 
@@ -42,7 +42,8 @@ Options
   - `-c CONFIG, --config CONFIG` pour spécifier un fichier de configuration `CONFIG` alternatif à `config/config.yaml`
   - `-n, --no-download` pour ne pas exécuter l'étape de téléchargement des fichiers JSON MISP, correspond à l'import des fichiers JSON MISP dans MISP
   - `-d, --delete-local-directory-content` pour effacer le contenu du répertoire `local_directory` avant le téléchargement des fichiers JSON MISP
-  - `-q, --quiet` pour réduire à une occurrence chaque message d'avertissement dans les ficheirs de journalisation 
+  - `-q, --quiet` pour réduire à une occurrence chaque message d'avertissement dans les ficheirs de journalisation
+  - `-y, --yara` pour télécharger les fichiers yara présent sur le serveur SFTP. Les fichiers seront uniquement téléchargé et non ajouté à l'instance MISP
 
 Lors de la connexion au serveur SFTP, si votre clé privée est protégée par un mot de passe, vous devrez le saisir manuellement.
 
@@ -54,7 +55,7 @@ Automation script to download JSON MISP files from a SFTP server and import them
 
 - a SFTP server with SSH key-based authentication
 - a MISP server (> 2.4.130) with API key-based authentication (Sync User role)
-- a Linux server with python 3.8 to run the script 
+- a Linux server with python 3.8 to run the script
 
 ## Installation
 
@@ -90,5 +91,6 @@ Options
   - `-n, --no-download ` Bypass JSON MISP files download, and just import the local JSON MISP files into MISP instance
   - `-d, --delete-local-directory-content` Erase the content of the `local_directory` before JSON MISP files are downloaded
   - `-q, --quiet` Reduce spam in logs by showing warnings only once
-  
+  - `-y, --yara` download YARA files on SFTP server. Files will only be downloaded and not added to MISP instance
+
 When connecting to the SFTP server, if your private key is protected by a password, you shall enter it manually.
