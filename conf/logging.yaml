@@ -13,7 +13,7 @@ LOGGING:
       class: conf._TimestampedRotatingFileHandler.TimestampedRotatingFileHandler
       level: INFO
       formatter: simple
-      date: "%Y%m%d" #strftime format
+      dateFormat: "%Y%m%d" #strftime format
       filename: "log/sftp2misp.log"
       maxBytes: 10485760 # 10MB
       backupCount: 20
