@@ -5,6 +5,7 @@ import argparse
 import subprocess
 import sys
 import warnings
+import json
 from pymisp import ExpandedPyMISP, MISPEvent
 import pymisp.exceptions
 from conf import config
@@ -80,6 +81,12 @@ def cli():
         help="""Erase the content of the local_directory
                 before JSON MISP files are downloaded""",
     )
+    # parser.add_argument(
+    #     "-i",
+    #     "--diff",
+    #     required=False,
+    #     help="Run a diff",
+    # )
     parser.add_argument(
         "-q",
         "--quiet",
@@ -192,7 +199,11 @@ def upload_events(misp, local_dir, logger):
         if file.endswith(".json"):
             event = MISPEvent()
             logger.info(f"Loading {file}")
-            event.load_file(file)
+            try:
+                event.load_file(file)
+            except json.decoder.JSONDecodeError as err:
+                logger.info(f"filename is not in MISPJson format")
+                continue
             if event_already_exist(misp, event):
                 if not event_not_updated(misp, event):
                     rep = misp.update_event(event, pythonify=False)
