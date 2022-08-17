@@ -81,6 +81,13 @@ def cli():
         help="""Erase the content of the local_directory
                 before JSON MISP files are downloaded""",
     )
+
+    parser.add_argument(
+        "-y",
+        "--yara",
+        action="store_true",
+        help="""Also download YARA files on server"""
+    )
     # parser.add_argument(
     #     "-i",
     #     "--diff",
@@ -145,7 +152,7 @@ def generate_proxy_command(
 
 
 def get_events(
-    identity_file, proxy_command, host_ip, port, user, server_dir, local_dir, logger
+    identity_file, proxy_command, host_ip, port, user, server_dir, local_dir, extension, logger
 ):
     """
     Invoke a bash command to get all the files from the sftp server.
@@ -168,7 +175,7 @@ def get_events(
             f"-o ProxyCommand={proxy_command}",
             "-P",
             f"{port}",
-            f"{user}@{host_ip}:{server_dir}/*.json {local_dir}",
+            f"{user}@{host_ip}:{server_dir}/*.{extension} {local_dir}",
         ],
         check=True,
     )
@@ -199,11 +206,14 @@ def upload_events(misp, local_dir, logger):
         if file.endswith(".json"):
             event = MISPEvent()
             logger.info(f"Loading {file}")
+            print(file)
             try:
                 event.load_file(file)
-            except json.decoder.JSONDecodeError as err:
+            except (json.decoder.JSONDecodeError, pymisp.exceptions.NewEventError) as err:
+                logger.warning(err)
                 logger.info(f"filename is not in MISPJson format")
                 continue
+
             if event_already_exist(misp, event):
                 if not event_not_updated(misp, event):
                     rep = misp.update_event(event, pythonify=False)
@@ -273,6 +283,7 @@ def main():
                 sftp_c["username"],
                 sftp_directory,
                 misc_c["local_directory"],
+                "json",
                 logger,
             )
     upload_events(misp, misc_c["local_directory"], logger)
