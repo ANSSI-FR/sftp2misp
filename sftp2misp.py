@@ -206,10 +206,9 @@ def upload_events(misp, local_dir, logger):
         if file.endswith(".json"):
             event = MISPEvent()
             logger.info(f"Loading {file}")
-            print(file)
             try:
                 event.load_file(file)
-            except (json.decoder.JSONDecodeError, pymisp.exceptions.NewEventError) as err:
+            except (json.decoder.JSONDecodeError, pymisp.exceptions.NewEventError, pymisp.exceptions.PyMISPError) as err:
                 logger.warning(err)
                 logger.info(f"filename is not in MISPJson format")
                 continue
