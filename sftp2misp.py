@@ -228,7 +228,7 @@ def upload_events(misp, local_dir, logger):
                 event.load_file(file)
             except (json.decoder.JSONDecodeError, pymisp.exceptions.NewEventError, pymisp.exceptions.PyMISPError) as err:
                 logger.warning(err)
-                logger.info(f"filename is not in MISPJson format")
+                logger.info(f"{filename} is not in JSON-MISP format")
                 continue
 
             if event_already_exist(misp, event):
