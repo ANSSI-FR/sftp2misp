@@ -7,6 +7,7 @@ import sys
 import logging
 import warnings
 import json
+from pathlib import Path
 from pymisp import ExpandedPyMISP, MISPEvent
 import pymisp.exceptions
 from conf import config
@@ -200,6 +201,8 @@ def get_events(
     )
     errors = 0
     logger.debug(f"extension list {extensions}")
+    local_dir = (Path(__file__).parent / Path(local_dir)).resolve()
+    print(local_dir)
     for extension in extensions:
         logger.debug(f"downloading .{extension} files on server {host_ip}")
         errors += sftp_get_files(identity_file, proxy_command, host_ip, port, user, server_dir, local_dir, extension, logger)
@@ -229,6 +232,7 @@ def upload_events(misp, local_dir, logger):
     _event_deleted = 0
     _event_error = 0
     _wrong_format = 0
+    local_dir = Path(__file__).parent.parent / Path(local_dir)
     for filename in os.listdir(local_dir):
         file = os.path.join(local_dir, filename)
         if file.endswith(".json"):

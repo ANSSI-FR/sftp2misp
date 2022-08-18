@@ -52,10 +52,9 @@ def get_config(config_file):
     """
     Open, load and check for errors in configuration file
     """
-    cwd = Path(__file__).parent.parent
-    config_path = cwd / Path(config_file)
+    config_file = Path(config_file).resolve()
     try:
-        with open(config_path, "r") as config_file:
+        with open(config_file, "r") as config_file:
             conf = yaml.safe_load(config_file)
             errors = check_config(conf)
             if errors:
@@ -69,7 +68,7 @@ def get_config(config_file):
                 sys.exit(1)
             return conf["SFTP"], conf["MISP"], conf["MISC"]
     except FileNotFoundError as _:
-        print(f"Configuration file \"{conf_file}\" ({config_path}) not found")
+        print(f"Configuration file \"{config_file}\" not found")
         sys.exit(1)
 
 
@@ -78,22 +77,26 @@ def create_logger(config_log):
     """
     Open and load configuration file for logging
     """
-    with open(config_log["logging_conf"], "r") as log_conf_file:
-        log_conf = yaml.safe_load(log_conf_file)
-        path, _ = os.path.split(log_conf["LOGGING"]["handlers"]["file"]["filename"])
-        try:
-            os.mkdir(path)
-        except FileExistsError:
-            pass
-        except:
-            print("Unexpected error: ", sys.exc_info()[0])
-            raise
-        logging.config.dictConfig(log_conf["LOGGING"])
-        logger = logging.getLogger("__name__")
-        logger.info("Configuration file loading completed")
-        logging.captureWarnings(True)
-        return logger
-
+    logging_path = Path(__file__).parent.parent / Path(config_log["logging_conf"])
+    try:
+        with open(logging_path, "r") as log_conf_file:
+            log_conf = yaml.safe_load(log_conf_file)
+            path, _ = os.path.split(log_conf["LOGGING"]["handlers"]["file"]["filename"])
+            try:
+                os.mkdir(path)
+            except FileExistsError:
+                pass
+            except:
+                print("Unexpected error: ", sys.exc_info()[0])
+                raise
+            logging.config.dictConfig(log_conf["LOGGING"])
+            logger = logging.getLogger("__name__")
+            logger.info("Configuration file loading completed")
+            logging.captureWarnings(True)
+            return logger
+    except FileNotFoundError as _:
+        print(f"Configuration file \"{logging_path}\" not found")
+        sys.exit(1)
 
 def set_ssl(misp_c):
     """
