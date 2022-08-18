@@ -4,6 +4,7 @@ import os
 import argparse
 import subprocess
 import sys
+import logging
 import warnings
 import json
 from pymisp import ExpandedPyMISP, MISPEvent
@@ -81,12 +82,17 @@ def cli():
         help="""Erase the content of the local_directory
                 before JSON MISP files are downloaded""",
     )
-
     parser.add_argument(
         "-y",
         "--yara",
         action="store_true",
         help="""Also download YARA files on server"""
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="""Enable verbose mode"""
     )
     # parser.add_argument(
     #     "-i",
@@ -124,7 +130,7 @@ def event_already_exist(misp, event) -> bool:
     return misp.event_exists(event_uuid)
 
 
-def event_not_updated(misp, local_event) -> bool:
+def event_not_updated(misp, local_event, logger) -> bool:
     """
     Test if the downloaded version of the current event was updated compared
     to the version on the MISP instance.
@@ -133,6 +139,9 @@ def event_not_updated(misp, local_event) -> bool:
     local_event_timestamp = local_event.get("timestamp")
     misp_event = misp.get_event(local_event_uuid, pythonify=True)
     misp_event_timestamp = misp_event.get("timestamp")
+    logger.debug(f"Event uuid : {local_event_uuid}")
+    logger.debug(f"Local timestamp : {local_event_timestamp}")
+    logger.debug(f"MISP Event timestamp : {misp_event_timestamp}")
     return local_event_timestamp == misp_event_timestamp
 
 
@@ -234,7 +243,7 @@ def upload_events(misp, local_dir, logger):
                 continue
 
             if event_already_exist(misp, event):
-                if not event_not_updated(misp, event):
+                if not event_not_updated(misp, event, logger):
                     rep = misp.update_event(event, pythonify=False)
                     logger.info(f"Event {file} updated")
                     _event_updated += 1
@@ -277,6 +286,9 @@ def main():
     """
     args = cli()
     logger, sftp_c, misp_c, misc_c = init(args)
+    if args.verbose:
+        logger.setLevel(1)
+        logger.info("verbose mode")
     if args.quiet:
         warnings.filterwarnings("once")
     else:
