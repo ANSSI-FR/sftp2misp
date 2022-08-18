@@ -219,6 +219,7 @@ def upload_events(misp, local_dir, logger):
     _event_added = 0
     _event_deleted = 0
     _event_error = 0
+    _wrong_format = 0
     for filename in os.listdir(local_dir):
         file = os.path.join(local_dir, filename)
         if file.endswith(".json"):
@@ -229,6 +230,7 @@ def upload_events(misp, local_dir, logger):
             except (json.decoder.JSONDecodeError, pymisp.exceptions.NewEventError, pymisp.exceptions.PyMISPError) as err:
                 logger.warning(err)
                 logger.info(f"{filename} is not in JSON-MISP format")
+                _wrong_format += 1
                 continue
 
             if event_already_exist(misp, event):
@@ -264,7 +266,8 @@ def upload_events(misp, local_dir, logger):
         f"\n{' '*62} {_event_added} new events added"
         f"\n{' '*62} {_event_deleted} events not added (in blocklist)"
         f"\n{' '*62} {_event_not_updated} events not updated"
-        f"\n{' '*62} {_event_error} errors"
+        f"\n{' '*62} {_wrong_format} files not compliant with MISP JSON format"
+        f"\n{' '*62} {_event_error} errors (check loggers WARNING and ERRORS)"
     )
 
 
