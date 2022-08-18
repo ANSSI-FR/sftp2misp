@@ -6,6 +6,7 @@ import logging.config
 import os
 import sys
 import yaml
+from pathlib import Path
 
 
 def check_config(config):
@@ -47,23 +48,30 @@ def check_config(config):
     return error
 
 
-def get_config(conf_file):
+def get_config(config_file):
     """
     Open, load and check for errors in configuration file
     """
-    with open(conf_file, "r") as config_file:
-        conf = yaml.safe_load(config_file)
-        errors = check_config(conf)
-        if errors:
-            entry = ["List of entries", "Entry"]
-            print(
-                f"Your configuration file {conf_file} is not compliant with config.yaml.template : entries are missing or not supported. Please review and fix it."
-            )
-            print(f"{entry[len(errors) == 1]} not compliant :")
-            for error in errors:
-                print(error)
-            sys.exit(1)
-        return conf["SFTP"], conf["MISP"], conf["MISC"]
+    cwd = Path(__file__).parent.parent
+    config_path = cwd / Path(config_file)
+    try:
+        with open(config_path, "r") as config_file:
+            conf = yaml.safe_load(config_file)
+            errors = check_config(conf)
+            if errors:
+                entry = ["List of entries", "Entry"]
+                print(
+                    f"Your configuration file {conf_file} is not compliant with config.yaml.template : entries are missing or not supported. Please review and fix it."
+                )
+                print(f"{entry[len(errors) == 1]} not compliant :")
+                for error in errors:
+                    print(error)
+                sys.exit(1)
+            return conf["SFTP"], conf["MISP"], conf["MISC"]
+    except FileNotFoundError as _:
+        print(f"Configuration file \"{conf_file}\" ({config_path}) not found")
+        sys.exit(1)
+
 
 
 def create_logger(config_log):
