@@ -43,7 +43,6 @@ Options
   - `-n, --no-download` pour ne pas exécuter l'étape de téléchargement des fichiers JSON MISP, correspond à l'import des fichiers JSON MISP dans MISP
   - `-d, --delete-local-directory-content` pour effacer le contenu du répertoire `local_directory` avant le téléchargement des fichiers JSON MISP
   - `-q, --quiet` pour réduire à une occurrence chaque message d'avertissement dans les ficheirs de journalisation
-  - `-y, --yara` pour télécharger les fichiers yara présent sur le serveur SFTP. Les fichiers seront uniquement téléchargé et non ajouté à l'instance MISP
   - `-v, --verbose` pour activer le mode verbose du logger et afficher les messages de debug
 
 Lors de la connexion au serveur SFTP, si votre clé privée est protégée par un mot de passe, vous devrez le saisir manuellement.
@@ -92,7 +91,6 @@ Options
   - `-n, --no-download ` Bypass JSON MISP files download, and just import the local JSON MISP files into MISP instance
   - `-d, --delete-local-directory-content` Erase the content of the `local_directory` before JSON MISP files are downloaded
   - `-q, --quiet` Reduce spam in logs by showing warnings only once
-  - `-y, --yara` download YARA files on SFTP server. Files will only be downloaded and not added to MISP instance
   - `-v, --verbose` to activate logger verbose mode and show debug messages
 
 When connecting to the SFTP server, if your private key is protected by a password, you shall enter it manually.
