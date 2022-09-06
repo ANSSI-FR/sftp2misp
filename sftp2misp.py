@@ -84,12 +84,6 @@ def cli():
                 before JSON MISP files are downloaded""",
     )
     parser.add_argument(
-        "-y",
-        "--yara",
-        action="store_true",
-        help="""Also download YARA files on server"""
-    )
-    parser.add_argument(
         "-v",
         "--verbose",
         action="store_true",
@@ -162,7 +156,7 @@ def generate_proxy_command(
 
 
 def sftp_get_files(
-    identity_file, proxy_command, host_ip, port, user, server_dir, local_dir, extension, logger
+    identity_file, proxy_command, host_ip, port, user, server_dir, local_dir, logger
 ):
     try:
         ret = subprocess.run(
@@ -173,18 +167,19 @@ def sftp_get_files(
                 f"-o ProxyCommand={proxy_command}",
                 "-P",
                 f"{port}",
-                f"{user}@{host_ip}:{server_dir}/*.{extension} {local_dir}",
+                f"{user}@{host_ip}:{server_dir}/* {local_dir}",
             ],
             check=True,
         )
     except subprocess.CalledProcessError as err:
-        return 1
+        logger.warning(err)
+        sys.exit(1)
     else:
-        return 0
+        return
 
 
 def get_events(
-    identity_file, proxy_command, host_ip, port, user, server_dir, local_dir, extensions, logger
+    identity_file, proxy_command, host_ip, port, user, server_dir, local_dir, logger
 ):
     """
     Invoke a bash command to get all the files from the sftp server.
@@ -199,16 +194,8 @@ def get_events(
             if os.path.isfile(os.path.join(local_dir, name))
         ]
     )
-    errors = 0
-    logger.debug(f"extension list {extensions}")
     local_dir = (Path(__file__).parent / Path(local_dir)).resolve()
-    print(local_dir)
-    for extension in extensions:
-        logger.debug(f"downloading .{extension} files on server {host_ip}")
-        errors += sftp_get_files(identity_file, proxy_command, host_ip, port, user, server_dir, local_dir, extension, logger)
-    if errors >= len(extensions):
-        logger.error("Unable to retrieve files from sftp server, please verify the configuration file")
-        sys.exit(1)
+    sftp_get_files(identity_file, proxy_command, host_ip, port, user, server_dir, local_dir, logger)
     new_file_number = len(
         [
             name
@@ -299,9 +286,6 @@ def main():
         warnings.filterwarnings("always")
     misp = misp_init(misp_c, logger)
     proxy_command = ""
-    extensions = ["json"]
-    if args.yara:
-        extensions.append("yara")
 
     if sftp_c["proxy_command"] != "":
         proxy_command = generate_proxy_command(
@@ -323,7 +307,6 @@ def main():
                 sftp_c["username"],
                 sftp_directory,
                 misc_c["local_directory"],
-                extensions,
                 logger,
             )
     upload_events(misp, misc_c["local_directory"], logger)
