@@ -88,7 +88,7 @@ def cli():
         "--verbose",
         action='count',
         default=0,
-        help="""Enable verbose mode"""
+        help="""Update verbosity level"""
     )
     parser.add_argument(
         "-q",
