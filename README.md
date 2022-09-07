@@ -10,8 +10,11 @@ Script d'automatisation de la récupération de fichiers JSON MISP sur un serveu
 
 ## Installation
 
-De préférence, faire usage d'un environnement virtuel (virtualenv) Python pour l'installation des dépendances :
+De préférence, faire usage d'un environnement virtuel (virtualenv) Python pour l'installation des dépendances.
 
+Pour une installation automatisée, exécuter `make init` à la racine du répertoire projet.
+
+Pour une installation pas à pas :
 - Création du virtualenv : `python3 -m venv path/to/venv`  
 - Activation du virtualenv : `source path/to/venv/bin/activate`  
 - Installation des dépendances : `pip install -r requirements.txt`  
@@ -39,7 +42,8 @@ Options
   - `-c CONFIG, --config CONFIG` pour spécifier un fichier de configuration `CONFIG` alternatif à `config/config.yaml`
   - `-n, --no-download` pour ne pas exécuter l'étape de téléchargement des fichiers JSON MISP, correspond à l'import des fichiers JSON MISP dans MISP
   - `-d, --delete-local-directory-content` pour effacer le contenu du répertoire `local_directory` avant le téléchargement des fichiers JSON MISP
-  - `-q, --quiet` pour réduire à une occurrence chaque message d'avertissement dans les fichiers de journalisation 
+  - `-q, --quiet` pour réduire à une occurrence chaque message d'avertissement dans les ficheirs de journalisation
+  - `-v, --verbose` pour changer le niveau de verbosité de script
 
 Lors de la connexion au serveur SFTP, si votre clé privée est protégée par un mot de passe, vous devrez le saisir manuellement.
 
@@ -51,12 +55,15 @@ Automation script to download JSON MISP files from a SFTP server and import them
 
 - a SFTP server with SSH key-based authentication
 - a MISP server (> 2.4.130) with API key-based authentication (Sync User role)
-- a Linux server with python 3.8 to run the script 
+- a Linux server with python 3.8 to run the script
 
 ## Installation
 
-Preferably, use a Python virtual environment (virtualenv) to install dependencies :
+Preferably, use a Python virtual environment (virtualenv) to install dependencies.
 
+For automated installation, run `make init` in project root directory.
+
+For a step by step installation :
 - Create virtualenv : `python3 -m venv path/to/venv`  
 - Activate virtualenv : `source path/to/venv/bin/activate`  
 - Install dependencies : `pip install -r requirements.txt`  
@@ -84,5 +91,6 @@ Options
   - `-n, --no-download ` Bypass JSON MISP files download, and just import the local JSON MISP files into MISP instance
   - `-d, --delete-local-directory-content` Erase the content of the `local_directory` before JSON MISP files are downloaded
   - `-q, --quiet` Reduce spam in logs by showing warnings only once
-  
+  - `-v, --verbose` to change the script verbosity level
+
 When connecting to the SFTP server, if your private key is protected by a password, you shall enter it manually.
