@@ -91,6 +91,6 @@ Options
   - `-n, --no-download ` Bypass JSON MISP files download, and just import the local JSON MISP files into MISP instance
   - `-d, --delete-local-directory-content` Erase the content of the `local_directory` before JSON MISP files are downloaded
   - `-q, --quiet` Reduce spam in logs by showing warnings only once
-  - `-v, --verbose` to activate logger verbose mode and show debug messages
+  - `-v, --verbose` to change the script verbosity level
 
 When connecting to the SFTP server, if your private key is protected by a password, you shall enter it manually.
