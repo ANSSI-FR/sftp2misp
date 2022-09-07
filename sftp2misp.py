@@ -86,15 +86,10 @@ def cli():
     parser.add_argument(
         "-v",
         "--verbose",
-        action="store_true",
+        action='count',
+        default=0,
         help="""Enable verbose mode"""
     )
-    # parser.add_argument(
-    #     "-i",
-    #     "--diff",
-    #     required=False,
-    #     help="Run a diff",
-    # )
     parser.add_argument(
         "-q",
         "--quiet",
@@ -229,7 +224,7 @@ def upload_events(misp, local_dir, logger):
                 event.load_file(file)
             except (json.decoder.JSONDecodeError, pymisp.exceptions.NewEventError, pymisp.exceptions.PyMISPError) as err:
                 logger.warning(err)
-                logger.info(f"{filename} is not in JSON-MISP format")
+                logger.warning(f"{filename} is not in JSON-MISP format")
                 _wrong_format += 1
                 continue
 
@@ -277,9 +272,15 @@ def main():
     """
     args = cli()
     logger, sftp_c, misp_c, misc_c = init(args)
-    if args.verbose:
+    if args.verbose == 0:
+        logger.info("logger set to WARNING and ERROR only level")
+        logger.setLevel(21)
+    elif args.verbose == 1:
+        logger.info("logger set to INFO, WARNING and ERROR level")
+        logger.setLevel(11)
+    elif args.verbose == 2:
+        logger.info("logger set DEBUG level")
         logger.setLevel(1)
-        logger.info("verbose mode")
     if args.quiet:
         warnings.filterwarnings("once")
     else:
