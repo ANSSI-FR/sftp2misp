@@ -4,7 +4,10 @@ import os
 import argparse
 import subprocess
 import sys
+import logging
 import warnings
+import json
+from pathlib import Path
 from pymisp import ExpandedPyMISP, MISPEvent
 import pymisp.exceptions
 from conf import config
@@ -16,9 +19,7 @@ def init(args):
     config file given at startup.
     """
     sftp_c, misp_c, misc_c = config.get_config(args.config)
-    logger = config.get_logger(
-        misc_c["logging_conf"], misc_c["logging_directory"], misc_c["logging_suffix"]
-    )
+    logger = config.create_logger(misc_c)
     check_args(args, logger)
     try:
         os.mkdir(misc_c["local_directory"])
@@ -83,6 +84,13 @@ def cli():
                 before JSON MISP files are downloaded""",
     )
     parser.add_argument(
+        "-v",
+        "--verbose",
+        action='count',
+        default=0,
+        help="""Update verbosity level"""
+    )
+    parser.add_argument(
         "-q",
         "--quiet",
         action="store_true",
@@ -112,7 +120,7 @@ def event_already_exist(misp, event) -> bool:
     return misp.event_exists(event_uuid)
 
 
-def event_not_updated(misp, local_event) -> bool:
+def event_not_updated(misp, local_event, logger) -> bool:
     """
     Test if the downloaded version of the current event was updated compared
     to the version on the MISP instance.
@@ -121,6 +129,9 @@ def event_not_updated(misp, local_event) -> bool:
     local_event_timestamp = local_event.get("timestamp")
     misp_event = misp.get_event(local_event_uuid, pythonify=True)
     misp_event_timestamp = misp_event.get("timestamp")
+    logger.debug(f"Event uuid : {local_event_uuid}")
+    logger.debug(f"Local timestamp : {local_event_timestamp}")
+    logger.debug(f"MISP Event timestamp : {misp_event_timestamp}")
     return local_event_timestamp == misp_event_timestamp
 
 
@@ -139,6 +150,29 @@ def generate_proxy_command(
     return proxy_command
 
 
+def sftp_get_files(
+    identity_file, proxy_command, host_ip, port, user, server_dir, local_dir, logger
+):
+    try:
+        ret = subprocess.run(
+            [
+                "sftp",
+                "-i",
+                f"{identity_file}",
+                f"-o ProxyCommand={proxy_command}",
+                "-P",
+                f"{port}",
+                f"{user}@{host_ip}:{server_dir}/* {local_dir}",
+            ],
+            check=True,
+        )
+    except subprocess.CalledProcessError as err:
+        logger.warning(err)
+        sys.exit(1)
+    else:
+        return
+
+
 def get_events(
     identity_file, proxy_command, host_ip, port, user, server_dir, local_dir, logger
 ):
@@ -155,18 +189,8 @@ def get_events(
             if os.path.isfile(os.path.join(local_dir, name))
         ]
     )
-    subprocess.run(
-        [
-            "sftp",
-            "-i",
-            f"{identity_file}",
-            f"-o ProxyCommand={proxy_command}",
-            "-P",
-            f"{port}",
-            f"{user}@{host_ip}:{server_dir}/*.json {local_dir}",
-        ],
-        check=True,
-    )
+    local_dir = (Path(__file__).parent / Path(local_dir)).resolve()
+    sftp_get_files(identity_file, proxy_command, host_ip, port, user, server_dir, local_dir, logger)
     new_file_number = len(
         [
             name
@@ -189,14 +213,23 @@ def upload_events(misp, local_dir, logger):
     _event_added = 0
     _event_deleted = 0
     _event_error = 0
+    _wrong_format = 0
+    local_dir = Path(__file__).parent.parent / Path(local_dir)
     for filename in os.listdir(local_dir):
         file = os.path.join(local_dir, filename)
         if file.endswith(".json"):
             event = MISPEvent()
-            event.load_file(file)
             logger.info(f"Loading {file}")
+            try:
+                event.load_file(file)
+            except (json.decoder.JSONDecodeError, pymisp.exceptions.NewEventError, pymisp.exceptions.PyMISPError) as err:
+                logger.warning(err)
+                logger.warning(f"{filename} is not in JSON-MISP format")
+                _wrong_format += 1
+                continue
+
             if event_already_exist(misp, event):
-                if not event_not_updated(misp, event):
+                if not event_not_updated(misp, event, logger):
                     rep = misp.update_event(event, pythonify=False)
                     logger.info(f"Event {file} updated")
                     _event_updated += 1
@@ -228,7 +261,8 @@ def upload_events(misp, local_dir, logger):
         f"\n{' '*62} {_event_added} new events added"
         f"\n{' '*62} {_event_deleted} events not added (in blocklist)"
         f"\n{' '*62} {_event_not_updated} events not updated"
-        f"\n{' '*62} {_event_error} errors"
+        f"\n{' '*62} {_wrong_format} files not compliant with MISP JSON format"
+        f"\n{' '*62} {_event_error} errors (check loggers WARNING and ERRORS)"
     )
 
 
@@ -238,12 +272,22 @@ def main():
     """
     args = cli()
     logger, sftp_c, misp_c, misc_c = init(args)
+    if args.verbose == 0:
+        logger.info("logger set to WARNING and ERROR only level")
+        logger.setLevel(21)
+    elif args.verbose == 1:
+        logger.info("logger set to INFO, WARNING and ERROR level")
+        logger.setLevel(11)
+    elif args.verbose == 2:
+        logger.info("logger set DEBUG level")
+        logger.setLevel(1)
     if args.quiet:
         warnings.filterwarnings("once")
     else:
         warnings.filterwarnings("always")
     misp = misp_init(misp_c, logger)
     proxy_command = ""
+
     if sftp_c["proxy_command"] != "":
         proxy_command = generate_proxy_command(
             sftp_c["proxy_command"],
