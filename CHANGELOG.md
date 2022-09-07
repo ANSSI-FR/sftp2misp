@@ -5,7 +5,7 @@
 - Script will now check for missing/wrong config entries
 - The script now downloads every files in given directories
 - Fix the script stopping when encountering a non MISP json file. Instead just log it as an error
-- Improved handling of relatives paths for local directory, logging directory and configuration directory
+- Improved handling of relative paths for local directory, logging directory and configuration directory
 
 
 ## [1.1.0] 2022-04-22
