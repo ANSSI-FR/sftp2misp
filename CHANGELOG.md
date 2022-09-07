@@ -2,6 +2,7 @@
 
 ## [1.1.1] 2022-09-07
 - Add a verbose command-line option to set logger level at runtime
+- Script will now check for missing/wrong config entries
 - The script now download every files in given directories
 - Fix the script stopping when encountering a non MISP json file. Instead just log it as an error
 - Improved handling of relatives paths for local directory, logging directory and configuration directory
