@@ -2,22 +2,23 @@ SFTP:
   host: "sftp_host"
   port: sftp_port
   sftp_directories:
-    - "path/to/file/on/server"
+    - "path/to/json/files/on/server"
   username: "sftp_username"
 
   private_key_file: "path/to/sftp_private_key"
-  proxy_command: "nc -X connect -x proxy_host:proxy_port host host_port"   #Keep empty ("") in order not to use a proxy_command. The command is
-                                                                           #completed at runtime. It is customizable, you can change the way it
-                                                                           #connects to the proxy, you just need to specify proxy_host, proxy_port
-                                                                           #host and host_port so that the script replace them with the desired values.
+  proxy_command: "nc -X connect -x proxy_host:proxy_port host host_port"        #By default, keep as it is.
+                                                                                #Empty (proxy_command: "") in order not to use a proxy_command. 
+                                                                                #/!\ Expert mode : You can customize the proxy command.
+                                                                                #Variables proxy_host, proxy_port, host and host_port
+                                                                                #in command are set at runtime with values you specified in config.
   proxy_host: "proxy_host"
   proxy_port: proxy_port
 
 MISP:
-  url: "misp url"
-  key: "misp API key"
-  bypass_proxy: False #Set to true to bypass proxies access to misp
-  ssl: True  #Use https requests instead of http
+  url: "misp_url"
+  key: "misp_API_key"
+  bypass_proxy: False #Set to True to bypass proxies access to misp
+  ssl: True  #Set to False to deactivate certificate verification
   CA_BUNDLE: "path/to/misp/certificates"
 
 MISC:
