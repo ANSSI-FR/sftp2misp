@@ -163,6 +163,14 @@ def sftp_get_files(
                 "-P",
                 f"{port}",
                 f"{user}@{host_ip}:{server_dir}/* {local_dir}",
+            ] if proxy_command != "" else
+            [
+                "sftp",
+                "-i",
+                f"{identity_file}",
+                "-P",
+                f"{port}",
+                f"{user}@{host_ip}:{server_dir}/* {local_dir}",
             ],
             check=True,
         )
