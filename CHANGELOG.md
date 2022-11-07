@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.1.2] 2022-11-07
+- Fix sftp call when not using proxycommand option (thanks @mbonino)
+
+
 ## [1.1.1] 2022-09-07
 - Add a verbose command-line option to set logger level at runtime
 - Script will now check for missing/wrong config entries
