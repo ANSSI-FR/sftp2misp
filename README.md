@@ -41,6 +41,7 @@ Options
   - `-h, --help` pour obtenir de l'aide
   - `-c CONFIG, --config CONFIG` pour spécifier un fichier de configuration `CONFIG` alternatif à `config/config.yaml`
   - `-n, --no-download` pour ne pas exécuter l'étape de téléchargement des fichiers JSON MISP, correspond à l'import des fichiers JSON MISP dans MISP
+  - `-m, --no-misp` pour ne pas exécuter l'étape d'import des fichiers JSON MISP dans MISP
   - `-d, --delete-local-directory-content` pour effacer le contenu du répertoire `local_directory` avant le téléchargement des fichiers JSON MISP
   - `-q, --quiet` pour réduire à une occurrence chaque message d'avertissement dans les fichiers de journalisation
   - `-v, --verbose` pour changer le niveau de verbosité de script
@@ -89,6 +90,7 @@ Options
   - `-h, --help` to get help
   - `-c CONFIG, --config CONFIG` Specify `CONFIG` as an alternative configuration file to `./conf/config.yaml`
   - `-n, --no-download ` Bypass JSON MISP files download, and just import the local JSON MISP files into MISP instance
+  - `-m, --no-misp ` Bypass the local JSON MISP files import into MISP instance
   - `-d, --delete-local-directory-content` Erase the content of the `local_directory` before JSON MISP files are downloaded
   - `-q, --quiet` Reduce spam in logs by showing warnings only once
   - `-v, --verbose` to change the script verbosity level
