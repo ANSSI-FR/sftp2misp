@@ -77,6 +77,12 @@ def cli():
                 local JSON MISP files into MISP instance""",
     )
     parser.add_argument(
+        "-m",
+        "--no-misp",
+        action="store_true",
+        help="""Bypass local JSON MISP files import into MISP instance""",
+    )
+    parser.add_argument(
         "-d",
         "--delete-local-directory-content",
         action="store_true",
@@ -293,7 +299,10 @@ def main():
         warnings.filterwarnings("once")
     else:
         warnings.filterwarnings("always")
-    misp = misp_init(misp_c, logger)
+   
+    if not args.no_mips:
+        misp = misp_init(misp_c, logger)
+   
     proxy_command = ""
 
     if sftp_c["proxy_command"] != "":
@@ -318,7 +327,8 @@ def main():
                 misc_c["local_directory"],
                 logger,
             )
-    upload_events(misp, misc_c["local_directory"], logger)
+   if not args.no_mips:
+       upload_events(misp, misc_c["local_directory"], logger)
 
 
 if __name__ == "__main__":
